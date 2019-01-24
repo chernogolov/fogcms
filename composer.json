@@ -14,9 +14,6 @@
     "autoload": {
         "psr-4": {
             "Chernogolov\\Fogcms\\": "src/"
-        },
-        "classmap": [
-            "src/Controllers"
-        ]
+        }
     }
 }
