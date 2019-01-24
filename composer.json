@@ -16,7 +16,7 @@
             "Chernogolov\\Fogcms\\": "src/"
         },
         "classmap": [
-            "src/controllers"
+            "src/Controllers"
         ]
     }
 }
