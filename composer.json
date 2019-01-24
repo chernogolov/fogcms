@@ -1,0 +1,22 @@
+{
+    "name": "chernogolov/fogcms",
+    "description": "simply CMS on laravel. Without frontend.",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Anton Chernogolov",
+            "email": "achernogolov@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {},
+    "version": "1.0.1",
+    "autoload": {
+        "psr-4": {
+            "Chernogolov\\Fogcms\\": "src/"
+        },
+        "classmap": [
+            "src/controllers"
+        ]
+    }
+}
