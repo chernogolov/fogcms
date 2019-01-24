@@ -9,7 +9,7 @@
 |
 */
 
-Route::get('/test', 'Chernogolov\Fogcms\Controllers\TestController@index')->name('test');
+Route::get('/test', 'Achernogolov\Fogcms\Controllers\TestController@index')->name('test');
 
 Auth::routes();
 
