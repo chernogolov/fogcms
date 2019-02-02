@@ -3,7 +3,7 @@
 namespace Chernogolov\Fogcms\Controllers;
 
 use App\Http\Controllers\Controller;
-use Achernogolov\Fogcms\Test;
+use App;
 
 class TestController extends Controller
 {

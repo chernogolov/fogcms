@@ -16,6 +16,7 @@
         "intervention/image": "dev-master",
         "intervention/imagecache": "^2.3",
         "phpoffice/phpword": "^0.15.0"
+
     },
     "version": "1.0.1",
     "autoload": {

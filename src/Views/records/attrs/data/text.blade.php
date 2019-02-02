@@ -1,0 +1,1 @@
+{{ str_limit($record->$key, 50) }}
