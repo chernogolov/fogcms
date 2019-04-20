@@ -3,7 +3,7 @@
         <label class="control-label">
             {{ $attr->title }}
             @if($attr->is_required == 1)
-                <strong class="text-danger" style="font-size: 24px;">*</strong>
+                <strong class="text-danger">*</strong>
             @endif
         </label>
     </div>

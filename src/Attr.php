@@ -17,6 +17,8 @@ use Chernogolov\Fogcms\Lists;
 class Attr extends Model
 {
 
+    public static $import = false;
+
     public static function getFields($node, $fieldset = null)
     {
         empty($attrs) ? $attrs = collect(Attr::getRegsAttrs($node->id))->keyBy('name') : $attrs = collect($attrs)->keyBy('name');
@@ -74,6 +76,7 @@ class Attr extends Model
 
     public static function getRegsAttrs($reg_id, $rid = null)
     {
+
         $attrs = DB::table('attrs')
             ->join('attrs_regs', 'attrs.id', '=', 'attrs_regs.attr_id')
             ->where('attrs_regs.regs_id', '=', $reg_id)
@@ -82,7 +85,6 @@ class Attr extends Model
             ->get();
 
         $data = array();
-
         foreach($attrs as $k => $v)
         {
             $function_name = 'get'.ucfirst($v->type).'Data';
@@ -102,6 +104,7 @@ class Attr extends Model
     public static function getRecordAttrs($rid, $keyBy = 'attr_id')
     {
         $regs = Records::getRecordRegs($rid)->get();
+
         $attrs = [];
         foreach($regs as $reg)
         {
@@ -112,9 +115,9 @@ class Attr extends Model
                 ->orderBy('ordering')
                 ->get();
         }
+
         $attrs = collect($attrs)->flatten()->keyBy($keyBy);
         $data = array();
-
         foreach($attrs as $k => $v)
         {
             $function_name = 'get'.ucfirst($v->type).'Data';
@@ -127,15 +130,17 @@ class Attr extends Model
 
             $data[$k] = $v;
         }
-
         return $data;
     }
 
-    public static function getRegAttr($attr_id)
+    public static function getRegAttr($attr_id, $reg_id = null)
     {
+        $where[] = ['attrs.id', '=', $attr_id];
+        if($reg_id)
+            $where[] = ['attrs_regs.regs_id', '=', $reg_id];
         $data = DB::table('attrs')
             ->join('attrs_regs', 'attrs.id', '=', 'attrs_regs.attr_id')
-            ->where('attrs.id', '=', $attr_id)
+            ->where($where)
             ->select(['attrs_regs.*', 'attrs.type', 'attrs.name', 'attrs.title', 'attrs.modificator'])
             ->first();
 
@@ -229,22 +234,40 @@ class Attr extends Model
         return $attrs;
     }
 
-    public static function saveAttr($data)
+    public static function saveAttr($data, $attr_data = null)
     {
-        $attr_data = Attr::getRegAttr($data['attr_id']);
+        if(!$attr_data)
+            $attr_data = Attr::getRegAttr($data['attr_id']);
+
         $function_name = 'set'.ucfirst($attr_data->type).'Value';
+
+        if($attr_data->is_required == 1 && empty($data['value']) && empty($data['save']))
+            return false;
 
         if(isset($data['save']))
         {
             $function_name2 = 'update'.ucfirst($attr_data->type).'Value';
-            Self::$function_name2($data, $attr_data);
+            $r = Self::$function_name2($data, $attr_data);
         }
-        Self::$function_name($data, $attr_data);
+
+        $r = Self::$function_name($data, $attr_data);
+        if($attr_data->is_required == 1)
+        {
+            if($r === false)
+                return false;
+        }
+
+        return true;
     }
 
     //----------------------------------------------------------------------------
 
     public static function getImageValues($attr, $rid)
+    {
+        return DB::table('attrs_media')->where([['attr_id', '=', $attr->attr_id], ['record_id', '=', $rid]])->get();
+    }
+
+    public static function getFileValues($attr, $rid)
     {
         return DB::table('attrs_media')->where([['attr_id', '=', $attr->attr_id], ['record_id', '=', $rid]])->get();
     }
@@ -279,6 +302,12 @@ class Attr extends Model
         return DB::table('attrs_digit')->where([['attr_id', '=', $attr->attr_id], ['record_id', '=', $rid]])->get();
     }
 
+    public static function getArrValues($attr, $rid)
+    {
+        return DB::table('attrs_text')->where([['attr_id', '=', $attr->attr_id], ['record_id', '=', $rid]])->first();
+    }
+
+
     public static function getLinkValues($attr, $rid)
     {
         $fields = [];
@@ -301,6 +330,16 @@ class Attr extends Model
     //----------------------------------------------------------------------------
 
     public static function getImageData($attr)
+    {
+        return array();
+    }
+
+    public static function getArrData($attr)
+    {
+        return array();
+    }
+
+    public static function getFileData($attr)
     {
         return array();
     }
@@ -386,15 +425,41 @@ class Attr extends Model
                 {
                     $d = $data;
                     $d['value'] = ImageController::uploadImage($v);
-                    $id = DB::table('attrs_media')->insertGetId($d);
+                    if($d['value'])
+                        $id = DB::table('attrs_media')->insertGetId($d);
                 }
             }
             else
             {
                 $id = $data['id'];
                 unset($data['id']);
-                $data['value'] = ImageController::uploadImage($data['value']);
-                DB::table('attrs_media')->where('id', $id)->update($data);
+                $d['value'] = ImageController::uploadImage($data['value']);
+                if($d['value'])
+                    DB::table('attrs_media')->where('id', $id)->update($data);
+            }
+        }
+    }
+
+    public static function setFileValue($data, $attr)
+    {
+        if(!isset($data['save']))
+            DB::table('attrs_media')->where([['attr_id', '=', $data['attr_id']],['record_id', '=', $data['record_id']]])->delete();
+
+        unset($data['type']);
+        unset($data['save']);
+        if(isset($data['value']) && !empty($data['value']))
+        {
+            if(!is_array($data['value']))
+                $data['value'] = array($data['value']);
+
+            foreach($data['value'] as $v)
+            {
+                $filename = time() . str_slug(str_limit($v->getClientOriginalName(), 50)) . '.' . $v->getClientOriginalExtension();
+                Storage::putFileAs('/public/' . date('Y-m') . '/' , $v, $filename);
+                $d = $data;
+                $d['value'] = '/storage/' . date('Y-m') . '/' . $filename;
+                if($d['value'])
+                    $id = DB::table('attrs_media')->insertGetId($d);
             }
         }
     }
@@ -441,6 +506,26 @@ class Attr extends Model
 
     public static function setTextValue($data, $attr)
     {
+        if(!isset($data['id']))
+            $id = DB::table('attrs_text')->insertGetId($data);
+        else
+        {
+            $id = $data['id'];
+            unset($data['id']);
+            DB::table('attrs_text')->where('id', $id)->update($data);
+        }
+
+        return $id;
+    }
+
+    public static function setArrValue($data, $attr)
+    {
+        if(is_string($data['value']))
+            $data['value'] = str_replace(array("\r\n", "\r", "\n", "\t", '  ', '    ', '    '), '', $data['value']);
+
+        if(is_object($data['value']) || is_array($data['value']))
+            $data['value'] = json_encode((array)$data['value']);
+
         if(!isset($data['id']))
             $id = DB::table('attrs_text')->insertGetId($data);
         else
@@ -506,6 +591,7 @@ class Attr extends Model
                 return DB::table('attrs_digit')->where([['attr_id', $data['attr_id']], ['record_id', $data['record_id']]])->delete();
         }
 
+
         //working with array
         if(is_array($data['value']))
         {
@@ -513,7 +599,6 @@ class Attr extends Model
         }
         else
         {
-
             if($attr->modificator != 'deadline')
                 $data['value'] = strtotime($data['value']);
 
@@ -535,7 +620,6 @@ class Attr extends Model
         }
     }
 
-
     public static function setRegisterValue($data, $attr)
     {
         if(!isset($data['id']))
@@ -552,22 +636,48 @@ class Attr extends Model
 
     public static function setLinkValue($data, $attr)
     {
-
-        if(!isset($data['id'])) //add new attr value
+        $ids = [];
+        if(!isset($data['value']) || empty($data['value']))
         {
-            DB::table('attrs_digit')->where([['attr_id', '=', $data['attr_id']],['record_id', '=', $data['record_id']]])->delete();
-            if(isset($data['value']) && $data['value'] != null)
-                $id = DB::table('attrs_digit')->insertGetId($data);
-        }
-        else // update value
-        {
-            DB::table('attrs_digit')->where([['attr_id', '=', $data['attr_id']],['record_id', '=', $data['record_id']]])->delete();
-            if($data['value'] != 0)
-                $id = DB::table('attrs_digit')->insertGetId(['attr_id' => $data['attr_id'], 'value' => $data['value'], 'record_id' => $data['record_id']]);
+            if($attr->is_required == 1)
+                return false;
+            else
+            {
+                DB::table('attrs_digit')->where([['attr_id', '=', $data['attr_id']],['record_id', '=', $data['record_id']]])->delete();
+                return true;
+            }
         }
 
-        if(isset($id))
-            return $id;
+        if(!empty($data['value']) && Self::$import) //import settings
+        {
+            if(strpos($data['value'],'::')===false)
+                $data['value'] = Self::getLinkValue($data['value'], $data['attr_id'], $attr);
+            else
+                $data['value'] = intval(str_replace('::', '', $data['value']));
+        }
+
+
+
+        if(!is_array($data['value']))
+            $data['value'] = [$data['value']];
+
+        foreach($data['value'] as $value)
+        {
+            $insert_data = $data;
+            $insert_data['value'] = $value;
+
+            $ids[] = DB::table('attrs_digit')->updateOrInsert($insert_data, ['value' => $value]);
+        }
+
+        $r = DB::table('attrs_digit')
+            ->where([['attr_id', '=', $data['attr_id']],['record_id', '=', $data['record_id']]])
+            ->whereNotIn('value', $data['value'])
+            ->delete();
+
+        if(!empty($ids))
+            return $ids;
+        else
+            return true;
     }
 
     // --------------------------------------------------------------------
@@ -583,11 +693,24 @@ class Attr extends Model
                 DB::table('attrs_media')->where('id', '=', $item->id)->delete();
             }
         }
+    }
 
+    public static function updateFileValue($data, $attr)
+    {
+        $r = DB::table('attrs_media')->where([['attr_id', '=', $data['attr_id']],['record_id', '=', $data['record_id']]])->get();
+        foreach($r as $item)
+        {
+            if(!in_array($item->id, $data['save']))
+            {
+                $r = Storage::delete(str_replace('/storage/', '/public/', $item->value));
+                DB::table('attrs_media')->where('id', '=', $item->id)->delete();
+            }
+        }
     }
 
     public static function updateLinkValue($data, $attr)
     {
+
         foreach($data['save'] as $item)
             DB::table('attrs_digit')->where('id', $item)->update(['value' => $data['value']]);
     }
@@ -609,11 +732,36 @@ class Attr extends Model
         if(in_array($attr->type, ['image', 'file']))
             return 'attrs_media';
 
+        if(in_array($attr->type, ['arr']))
+            return 'attrs_text';
+
         return 'attrs_'.$attr->type;
     }
 
     public static function saveDefaultFields($id, $data)
     {
+    }
+
+    public static function getLinkValue($value, $attrId, $reg_attr)
+    {
+        $attr = Self::getAttrsById($attrId);
+        if(isset($attr->meta) && intval($attr->meta)>0 && !empty($attr->data))
+        {
+            foreach($attr->data as $k => $item)
+            {
+                $params = [
+                    'filters' => [
+                        $k => [
+                            [$k,'=',$value]
+                        ]
+                    ]
+                ];
+                $result = Records::getRecords($attr->meta, $params);
+                if($result->count()>0)
+                    return $result->first()->id;
+            }
+        }
+        return false;
     }
 
 }

@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Notification;
 
 use Chernogolov\Fogcms\Attr;
 
@@ -20,26 +21,31 @@ class Records extends Model
      */
     protected $table = 'records';
 
+    public static $import = false;
+
     public function records()
     {
         return $this->hasMany('App\Records_Regs');
     }
 
-    public static function getRecord($id)
+    public static function getRecord($id, $fields = true)
     {
         $data = DB::table('records')
             ->join('records_regs', 'records.id', '=', 'records_regs.records_id')
             ->where('records.id', $id)
+            ->select('records.*')
             ->first();
 
         if(!$data)
             return false;
 
         $data = (array) $data;
-        $attrs = Attr::getRecordAttrs($id, 'name');
-        foreach($attrs as $name => $attr)
-            $data = array_merge($data, Self::flatAttr($name, $attr));
-
+        if($fields)
+        {
+            $attrs = Attr::getRecordAttrs($id, 'name');
+            foreach($attrs as $name => $attr)
+                $data = array_merge($data, Self::flatAttr($name, $attr));
+        }
         return $data;
     }
 
@@ -54,6 +60,13 @@ class Records extends Model
             foreach($attr->values as $val)
             {
                 $data[$name] = $attr->data[$val->value]->value;
+            }
+        }
+        elseif($attr->type == 'image')
+        {
+            foreach($attr->values as $val)
+            {
+                $data[$name] = $val->value;
             }
         }
         elseif($attr->type == 'link')
@@ -82,11 +95,13 @@ class Records extends Model
     public static function getRecords($id, $params = array(), $attrs = array())
     {
         $where = [];
+        $whereIn = [];
         $select[] = 'records.*';
 
         //base
         $tickets = DB::table('records')
             ->join('records_regs', 'records.id', '=', 'records_regs.records_id');
+
 
         !is_array($id) && $id!=null ? $id = [$id] : null ;
 
@@ -97,7 +112,13 @@ class Records extends Model
             $tickets->join('regs', 'regs.id', '=', 'records_regs.regs_id');
             $where[] = ['regs.type', '=', $params['type']];
         }
-
+        if(!isset($params['fields']))
+        {
+            $fields = Attr::getRegsAttrs($id);
+            foreach($fields as $f)
+             $params['fields'][$f->name] = $f;
+        }
+//dd($params);
         //set fields
         if(isset($params['fields']) && is_array($params['fields']))
         {
@@ -128,6 +149,7 @@ class Records extends Model
                     }
                     elseif($fdata->type == 'link')
                     {
+
                         //получаем атрибуты связанного журнала
                         $link_attrs = Attr::getRegsAttrs($fdata->meta);
 
@@ -149,6 +171,7 @@ class Records extends Model
                                         ->where($alpha[$i].'.attr_id', '=', $lattr->attr_id);
                                 });
                                 $select[] = $alpha[$i] . '.value as ' . $field;
+                                $select[] = $alpha[$i-1] . '.value as ' . $field . '_rid';
                                 $table_aliases[$field . '_'] = $alpha[$i];
                                 $i++;
                             }
@@ -174,6 +197,13 @@ class Records extends Model
         isset($params['user_id']) ? $where[] = ['records.user_id', '=', $params['user_id']] : null;
         //end user
 
+        //added users
+        if(isset($params['added_user']))
+        {
+            $tickets->join('users_records', 'records.id', '=', 'users_records.record_id');
+            $where[] = ['users_records.user_id', '=', $params['added_user']];
+        }
+
         //filter
         if(isset($params['filters']))
         {
@@ -184,23 +214,27 @@ class Records extends Model
                 {
                     if($attr_data->type == 'date')
                     {
-                        foreach($filter as $item)
+                        $item[0] = $table_aliases[$key] . '.value';
+                        if($item[1] == '=')
                         {
-                            $item[0] = $table_aliases[$key] . '.value';
-                            if($item[1] == '=')
-                            {
-                                $where[] = [$item[0], '>', strtotime($item[2])];
-                                $where[] = [$item[0], '<', strtotime($item[2])+86400];
-                            }
-                            else
-                                $where[] = [$item[0], $item[1], strtotime($item[2])];
+                            $where[] = [$item[0], '>', strtotime($item[2])];
+                            $where[] = [$item[0], '<', strtotime($item[2])+86400];
                         }
+                        else
+                            $where[] = [$item[0], $item[1], strtotime($item[2])];
                     }
                     else
-                        foreach($filter as $item)
+                        foreach($filter as $k => $item)
                         {
-                            $item[0] = $table_aliases[$key] . '.value';
-                            $where[] = $item;
+                            if($k === 'whereIn')
+                            {
+                                $whereIn[$table_aliases[$key] . '.value'] = $item;
+                            }
+                            else
+                            {
+                                $item[0] = $table_aliases[$key] . '.value';
+                                $where[] = $item;
+                            }
                         }
                 }
                 else
@@ -213,10 +247,13 @@ class Records extends Model
                 }
             }
         }
+
         //end filter
+        foreach ($whereIn as $kwhere => $kin) {
+            $tickets->whereIn($kwhere, $kin);
+        }
 
         $tickets->where($where);
-
         //include
         if(isset($params['include']))
         {
@@ -235,9 +272,7 @@ class Records extends Model
         }
 
         $tickets->select($select);
-
         $tickets->groupBy('records.id');
-
         if(isset($params['orderBy']))
         {
             if(isset($params['orderBy']['attr']))
@@ -257,36 +292,58 @@ class Records extends Model
             $tickets->orderBy('created_at', 'DESC');
         }
 
-//        isset($params['offset'])? $tickets->offset($params['offset']) : $tickets->offset(0);
-        !isset($params['limit'])? $params['limit'] = 50 : null ;
-        if(config('app.debug'))
+
+        if(!isset($params['offset']))
         {
-//            var_dump($tickets->toSql());
+            !isset($params['limit'])? $params['limit'] = 30 : null;
+            $r = $tickets->paginate($params['limit']);
+            $r->map(function ($item, $key) {
+                if(isset($item->deadline))
+                    $item->deadline = date('Y-m-d h:i', $item->deadline);
+
+                return $item;
+            });
+        }
+        else
+        {
+            isset($params['limit'])? $tickets->limit($params['offset']) : $params['limit'] = 30 ;
+            $r = $tickets->get();
         }
 
-        $r = $tickets->paginate($params['limit']);
+
 //        if(config('app.debug'))
 //        {
-
+//            var_dump($tickets->toSql());
 //        }
 
-        $r->map(function ($item, $key) {
-            if(isset($item->deadline))
-                $item->deadline = date('Y-m-d h:i', $item->deadline);
 
-            return $item;
-        });
 
         return $r;
     }
 
     public static function addRecord($regs, $attrs, $data = null)
     {
+        Attr::$import = Self::$import;
         unset($data['id']);
+        $attrs_data = [];
 
         if(!is_array($regs))
             $regs = array($regs);
 
+        foreach($regs as $reg_id)
+        {
+            //check required fields
+
+            foreach($attrs as $k => $v)
+            {
+                $attr_d = Attr::getRegAttr($v['attr_id'], $reg_id);
+                if($attr_d->is_required == 1)
+                    if(empty($attrs[$k]['value']))
+                        return false;
+
+                $attrs_data[$k] = $attr_d;
+            }
+        }
         if(!isset($data['created_at']))
             $data['created_at']= \Carbon\Carbon::now()->toDateTimeString();
 
@@ -296,16 +353,20 @@ class Records extends Model
         if(!isset($data['user_id']))
             Auth::check() ? $data['user_id'] = Auth::user()->id : $data['user_id'] = 0;
 
-        //indert record data
+        //insert record data
         $record_id = DB::table('records')->insertGetId($data);
 
         foreach($regs as $reg)
             DB::table('records_regs')->insertGetId(array('records_id' => $record_id, 'regs_id' => $reg));
 
-        foreach($attrs as $attr)
+        foreach($attrs as $kk => $attr)
         {
             $attr['record_id'] = $record_id;
-            Attr::saveAttr($attr);
+            if(Attr::saveAttr($attr, $attrs_data[$kk]) == false)
+            {
+                Self::deleteRecord($record_id);
+                return false;
+            }
         }
 
         //add crate status
@@ -316,6 +377,8 @@ class Records extends Model
 
     public static function saveRecord($regs, $data, $attrs)
     {
+        Attr::$import = Self::$import;
+
         if(!is_array($regs))
             $regs = array($regs);
 
@@ -345,20 +408,34 @@ class Records extends Model
 //            if(!in_array($reg, $new_rs))
 //                $id = DB::table('records_regs')->insertGetId(array('records_id' => $record_id, 'regs_id' => $reg));
 //        }
-
         //save attributes ----------------------
         foreach($attrs as $attr)
         {
             $attr['record_id'] = $record_id;
-            Attr::saveAttr($attr);
+            if(Attr::saveAttr($attr) == false)
+                return false;
         }
 
     }
 
-    public static function deleteRecord($record_id, $regs_id = null)
+    public static function deleteRecord($record_id, $regs_id = null, $nocart = false)
     {
-        $where = [['records_id', '=', $record_id]];
-        $regs_id ? $where[] = ['regs_id', '=', $regs_id] : null;
+        if(!$nocart)
+        {
+            $where = [['records_id', '=', $record_id]];
+            $regs_id ? $where[] = ['regs_id', '=', $regs_id] : null;
+            DB::table('records_regs')->where($where)->delete();
+        }
+        else
+        {
+            $where = [['id', '=', $record_id]];
+            DB::table('records')->where($where)->delete();
+        }
+    }
+
+    public static function clearReg($regs_id)
+    {
+        $where = [['regs_id', '=', $regs_id]];
         DB::table('records_regs')->where($where)->delete();
     }
 
@@ -410,26 +487,31 @@ class Records extends Model
     public static function changeRecordStatus($rid, $sid)
     {
         //add crate status
-        $updated_at= \Carbon\Carbon::now()->toDateTimeString();
-        DB::table('records')->where('id', $rid)->update(array('status' => $sid, 'updated_at' => $updated_at));
-        self::addRecordStatus($rid, $sid);
-        $statuses = [1 => ['status' => 'Новая', 'class' => 'danger'], 2 => ['status' => 'В работе', 'class' => 'warning'], 3 => ['status' => 'Выполнено', 'class' => 'success'], 4 => ['status' => 'Закрыто автором', 'class' => 'default']];
-        return $statuses[$sid];
+        if(Auth::check()) {
+            $updated_at = \Carbon\Carbon::now()->toDateTimeString();
+            DB::table('records')->where('id', $rid)->update(array('status' => $sid, 'updated_at' => $updated_at));
+            self::addRecordStatus($rid, $sid);
+            $statuses = [1 => ['status' => 'Новая', 'class' => 'danger'], 2 => ['status' => 'В работе', 'class' => 'warning'], 3 => ['status' => 'Выполнено', 'class' => 'success'], 4 => ['status' => 'Закрыто автором', 'class' => 'default']];
+            return $statuses[$sid];
+        }
     }
 
     public static function addRecordStatus($rid, $sid)
     {
         //add crate status
-        if(Auth::check())
-        {
-            $user_id = Auth::user()->id;
-            $added_on = \Carbon\Carbon::now()->toDateTimeString();
-            $r = Self::getRecordStatuses($rid, 'asc');
-            if(count($r)>20)
-                DB::table('records_statuses')->where('id', '=', $r[0]->id)->delete();
+        $user_id = 1;
 
-            DB::table('records_statuses')->insertGetId(array('record_id' => $rid, 'status' => $sid, 'user_id' => $user_id, 'added_on' => $added_on));
-        }
+        if (Auth::check())
+            $user_id = Auth::user()->id;
+
+
+        $added_on = \Carbon\Carbon::now()->toDateTimeString();
+        $r = Self::getRecordStatuses($rid, 'asc');
+        if(count($r)>20)
+            DB::table('records_statuses')->where('id', '=', $r[0]->id)->delete();
+
+        DB::table('records_statuses')->insertGetId(array('record_id' => $rid, 'status' => $sid, 'user_id' => $user_id, 'added_on' => $added_on));
+
     }
 
     public static function getRecordStatuses($rid, $sort = 'desc')
@@ -450,7 +532,7 @@ class Records extends Model
     {
         !is_array($reg_ids) ? $reg_ids = array($reg_ids) : null;
 
-        $default_fields = array_keys(Config::get('panel.default_fields'));
+        $default_fields = array_keys(Config::get('fogcms.default_fields'));
 
         foreach($reg_ids as $id)
         {
@@ -460,7 +542,8 @@ class Records extends Model
             $reg_attrs = Collect(Attr::getRegsAttrs($id))->keyBy('name');
             foreach($data as $item)
             {
-                if(Self::getRecord($item['id']))  // update record
+                $item = (array)$item;
+                if(isset($item['id']) && Self::getRecord($item['id']))  // update record
                 {
                     foreach($item as $key => $value)
                     {
@@ -524,5 +607,42 @@ class Records extends Model
         }
 
         return $regs;
+    }
+
+    public static function addRecordUser($record_id, $user_id)
+    {
+        $data = [];
+        $data['record_id']= $record_id;
+        $data['user_id']= $user_id;
+
+        if(!DB::table('users_records')->where($data)->get()->count())
+        {
+            $data['created_at']= \Carbon\Carbon::now()->toDateTimeString();
+            $data['updated_at']= \Carbon\Carbon::now()->toDateTimeString();
+            DB::table('users_records')->insert($data);
+        }
+    }
+
+    public static function deleteRecordUser($record_id, $user_id)
+    {
+        $where = [];
+        $where[] = ['record_id', '=', $record_id];
+        $where[] = ['user_id', '=', $user_id];
+        return DB::table('users_records')->where($where)->delete();
+    }
+
+    public static function OnOff($rid, $sid)
+    {
+        $updated_at= \Carbon\Carbon::now()->toDateTimeString();
+        DB::table('records')->where('id', $rid)->update(array('status' => $sid, 'updated_at' => $updated_at));
+        $statuses = [1 => ['status' => '<img src="/img/on.png" class="off">', 'class' => 'primary', 'change' => '0'], 0 => ['status' => '<img src="/img/off.png" class="off">', 'class' => 'default', 'change' => '1']];
+        return $statuses[$sid];
+    }
+
+    public static function Rate($rid, $rating)
+    {
+        $updated_at= \Carbon\Carbon::now()->toDateTimeString();
+        DB::table('records')->where('id', $rid)->update(array('rating' => intval($rating), 'updated_at' => $updated_at));
+        return $rating;
     }
 }

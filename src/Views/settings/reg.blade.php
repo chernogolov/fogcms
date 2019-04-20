@@ -117,7 +117,7 @@
             <table class="table table-striped table-bordered">
                 <tr>
                     <th>
-                        <span class="mdi mdi-remove"></span>
+                        <span class="mdi mdi-delete mdi-18px"></span>
                     </th>
                     <th>
                         {{__('Type')}}
@@ -129,16 +129,16 @@
                         {{__('Title')}}
                     </th>
                     <th>
-                        <span class="fas fa-thumbtack" title="{{__('View default')}}"></span>
+                        <span class="mdi mdi-pin mdi-18px" title="{{__('View default')}}"></span>
                     </th>
                     <th>
-                        <span class="fas fa-users" title="{{__('For all')}}"></span>
+                        <span class="mdi mdi-account-multiple mdi-18px" title="{{__('For all')}}"></span>
                     </th>
                     <th>
-                        <span class="fas fa-star-of-life" title="{{__('Required')}}"></span>
+                        <span class="mdi mdi-star mdi-18px" title="{{__('Required')}}"></span>
                     </th>
                     <th>
-                        <span class="fas fa-sort" title="{{__('Order')}}"></span>
+                        <span class="mdi mdi-sort-numeric mdi-18px" title="{{__('Order')}}"></span>
                     </th>
                     <th>
 

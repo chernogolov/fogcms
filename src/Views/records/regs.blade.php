@@ -1,14 +1,19 @@
 @push('scripts')
-        <script nonce="{{ csp_nonce() }}" src="{{asset('/vendor/chernogolov/fogcms/public/js/vendor/jstree/jstree.min.js')}}"></script>
+        <script src="{{asset('/vendor/chernogolov/fogcms/public/js/vendor/jstree/jstree.js')}}"></script>
+        <script src="{{asset('/vendor/chernogolov/fogcms/public/js/vendor/summernote/summernote-bs4.min.js')}}"></script>
+@endpush
+@push('styles')
+        <link href="{{ asset('/vendor/chernogolov/fogcms/public/js/vendor/summernote/summernote-bs4.css') }}" rel="stylesheet">
 @endpush
 <div class="row">
     <div id="jstree"></div>
     <br>
     <br>
 </div>
-<script type="text/javascript" nonce="{{ csp_nonce() }}">
+<script type="text/javascript">
     $(function()
     {
+        $.jstree.defaults.core.worker = false;
         $('#jstree').jstree(
             {
                 'core' :
@@ -42,7 +47,7 @@
                     ]
                 },
                 "plugins" : [ "themes", "html_data", "state"],
-                "state" : { "key" : "state_demo" }
+                "state" : { "key" : "regs" }
             }
         ).on("ready.jstree", function(e,data){
                 @if(isset($node->id))

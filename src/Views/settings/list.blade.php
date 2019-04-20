@@ -21,13 +21,13 @@
                     <td>
                         <input form="editForm" type="checkbox" class="for_check" name="clear[{{ $item->id }}]" title="{{__('Delete')}}">
                     </td>
-                    <td class="col-sm-5">
+                    <td>
                         <input form="editForm" value="{{ $item->value }}" form="editForm" placeholder="{{__('Enter new value')}}" class="form-control" name="list[{{ $item->id }}][value]">
                     </td>
-                    <td class="col-sm-5">
+                    <td>
                         <input form="editForm" value="{{ $item->meta }}" form="editForm" placeholder="{{__('Enter metadata')}}" class="form-control" name="list[{{ $item->id }}][meta]">
                     </td>
-                    <td class="col-sm-2">
+                    <td>
                         <input form="editForm" type="number" value="{{ $item->ordering }}" form="editForm" class="form-control" name="list[{{ $item->id }}][ordering]">
                     </td>
                 </tr>
@@ -38,13 +38,15 @@
     <hr>
     <div class="form-group row">
         <div class="col-sm-6">
-            <a name="addListValue" class="btn btn-default" data-toggle="modal" data-target="#addModal">{{__('Add list')}}</a>
+            <button type="button" name="addListValue" class="btn btn-default" data-toggle="modal" data-target="#addModal">{{__('Add list')}}</button>
         </div>
-        <div class="col-sm-6 float-right">
-            <span class="text-muted">
-                {{__('Go to list')}}&nbsp;&nbsp;<input type="checkbox" name="to_list" value="1" checked>&nbsp;&nbsp;&nbsp;
-            </span>
-            <button type="submit" form="editForm" class="btn btn-default" name="save_list" value="true">{{__('Save')}}</button>
+        <div class="col-sm-6">
+            <div class=" float-right">
+                <span class="text-muted">
+                    {{__('Go to list')}}&nbsp;&nbsp;<input type="checkbox" name="to_list" value="1" checked>&nbsp;&nbsp;&nbsp;
+                </span>
+                <button type="submit" form="editForm" class="btn btn-default" name="save_list" value="true">{{__('Save')}}</button>
+            </div>
         </div>
     </div>
 </form>
@@ -54,8 +56,8 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                     <h4 class="modal-title" id="myModalLabel">{{__('Add list')}}</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                 </div>
                 <div class="modal-body">
                     <textarea rows="12" form="addValues" name="values" class="form-control" placeholder="{{__('Input data, each with a new line')}}"></textarea>

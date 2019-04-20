@@ -14,11 +14,11 @@
                         {{--<li class="nav-item">--}}
                             {{--<a class="nav-link @if (Route::currentRouteName() == 'privacy-policy') active @endif" href="{{ route('options') . '/privacy-policy' }}">{{__('Privacy-policy')}}</a>--}}
                         {{--</li>--}}
-                        @if (Gate::allows('view-regs'))
-                            <li class="nav-item">
-                                <a class="nav-link @if (Route::getCurrentRoute()->group == 'view') active @endif " href="{{ route('options') . '/view' }}">{{__('View')}}</a>
-                            </li>
-                        @endif
+                        {{--@if (Gate::allows('view-regs'))--}}
+                            {{--<li class="nav-item">--}}
+                                {{--<a class="nav-link @if (Route::getCurrentRoute()->group == 'view') active @endif " href="{{ route('options') . '/view' }}">{{__('View')}}</a>--}}
+                            {{--</li>--}}
+                        {{--@endif--}}
 <!--                        <li @if (Route::currentRouteName() == 'notify_regs') class="active" @endif >-->
 <!--                            <a href="{{ route('options') . '/notify' }}">Оповещения</a>-->
 <!--                        </li>-->
@@ -29,7 +29,7 @@
 <!--                    <select class="form-control visible-xs" onchange="window.location.href=this.options[this.selectedIndex].value">-->
 <!--                        <option value="" disabled selected>Выберете раздел</option>-->
 <!--                        <option value="{{ route('options') . '/account' }}">Аккаунт</option>-->
-<!--                        @if (Gate::allows('view-regs'))<option value="{{ route('options') . '/view' }}">Внешний вид панели</option>@endif-->
+{{--<!--                        @if (Gate::allows('view-regs'))<option value="{{ route('options') . '/view' }}">Внешний вид панели</option>@endif-->--}}
 <!--                        <option value="{{ route('options') . '/user' }}">Оповещения</option>-->
 <!--                        <option value="{{ route('options') . '/house' }}">Мой дом</option>-->
 <!--                    </select>-->

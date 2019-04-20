@@ -4,6 +4,7 @@ namespace Chernogolov\Fogcms\Controllers;
 
 use App\Http\Controllers\Controller;
 
+
 class PanelController extends Controller
 {
     /**
@@ -13,7 +14,7 @@ class PanelController extends Controller
      */
     public function __construct()
     {
-//        $this->middleware('auth');
+        $this->middleware('auth');
     }
 
     /**
@@ -21,8 +22,4 @@ class PanelController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
-    {
-        return view('home');
-    }
 }

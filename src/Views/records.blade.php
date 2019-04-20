@@ -30,7 +30,7 @@
     </div>
 </div>
 
-<script nonce="{{ csp_nonce() }}" >
+<script>
     $(function()
     {
         var c = document.cookie;

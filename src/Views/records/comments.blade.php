@@ -1,22 +1,21 @@
 <div class="row">
     <div class="col-sm-12">
         <h4>
-            Комментарии:
+            {{__('Comments')}}
         </h4>
     </div>
 </div>
 @if(count($data)>0)
 <form method="post" class="form-horizontal" id="deleteForm" enctype="multipart/form-data" action="{{ route('deletecomments', ['rid' => $rid])}}">
     {{ csrf_field() }}
-    <div class="row" style="background: #f9f9f9">
-        <div class="col-sm-12"><br></div>
+    <div class="row" style="background: #fafafa;padding-top: 15px;">
         @foreach($data as $item)
             <div class="col-sm-4">
                 <strong>{{ $item->name }}<br>
                 {{ $item->email }}</strong><br>
                 <small class="text-muted">{{ $item->added_on }}</small>
                 @if($item->user_id == $user_id)
-                    <br><br><input type="checkbox" class="for_check" name="delete[{{ $item->id }}]" form="deleteForm">&nbsp;<span class="text-muted">удалить</span>
+                    <br><br><input type="checkbox" class="for_check" name="delete[{{ $item->id }}]" form="deleteForm">&nbsp;<span class="text-muted">{{__('Delete')}}</span>
                 @endif
             </div>
             <div class="col-sm-8">
@@ -44,7 +43,7 @@
         @endforeach
         <div class="clearfix"></div>
         <div class="col-sm-12">
-            <button form="deleteForm" data-destination="comments"  class="btn btn-default float-right submit" onclick="return confirm('Действительно удалить?');">Удалить выделенные</button>
+            <button form="deleteForm" data-destination="comments"  class="btn btn-default float-right submit" onclick="return confirm('Действительно удалить?');">{{__('Delete selection')}}</button>
         </div>
         <div class="clearfix"></div>
         <br>
@@ -53,17 +52,16 @@
 @endif
 <form method="post" class="form-horizontal" id="addForm" enctype="multipart/form-data" action="{{ route('editcomments', ['rid' => $rid])}}">
     {{ csrf_field() }}
-    <div class="row" style="background: #f2f2f2">
-        <br>
+    <div class="row" style="background: #fafafa;padding-top: 15px;">
         <div class="col-sm-4">
             <strong>
-                Ваш ответ
+                {{__('Your comment')}}
             </strong>
         </div>
         <div class="col-sm-8">
             <div class="image-preview">
             </div>
-            <input type="file" form="addForm" multiple="multiple" name="comment[image][]" class="form-control" id="inputImage" placeholder="выберете изображение" form="editForm"
+            <input type="file" form="addForm" multiple="multiple" name="comment[image][]" class="form-control" id="inputImage" placeholder="{{__('Select image')}}" form="editForm"
                    accept="image/*">
             <br>
             <textarea name="comment[text]" class="form-control" form="addForm" rows="5">@if(isset($comments->text)){{ $comments->text }}@endif</textarea>
@@ -74,15 +72,14 @@
                 </span>
             @endif
         </div>
-        <div class="col-sm-12">
-            <br>
+        <div class="col-sm-12" style="padding-top: 15px;">
             <div class="form-group row">
                 <div class="col-sm-12 text-right">
-                    <div class="visible-xs">
+                    <div class="d-block d-sm-none">
                         <br>
-                        <button form="addForm" data-destination="comments" data-btn="comment-xs" id="comment-xs-btn" class="btn btn-primary form-control submit">Отправить</button>
+                        <button form="addForm" data-destination="comments" data-btn="comment-xs" id="comment-xs-btn" class="btn btn-primary form-control submit">{{__('Send')}}</button>
                     </div>
-                    <button form="addForm" data-destination="comments" data-btn="comment" id="comment-btn" class="btn btn-default hidden-xs submit">Отправить</button>
+                    <button form="addForm" data-destination="comments" data-btn="comment" id="comment-btn" class="btn btn-default hidden-xs submit">{{__('Send')}}</button>
                 </div>
             </div>
         </div>
@@ -122,7 +119,7 @@
                 processData: false, // Отключаем, так как передаем файл
                 beforeSend: function() {
                     $('#inputImage').prop('disabled',true);
-                    $('.image-preview').append('<img src="/img/load_min.gif" id="comment_loader">');
+                    $('.image-preview').append('<img src="/vendor/chernogolov/fogcms/public/img/load_min.gif" id="comment_loader">');
                 },
                 success:function(data){
                     $('#comment_loader').remove();

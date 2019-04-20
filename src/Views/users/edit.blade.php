@@ -129,10 +129,10 @@
                     <td>
                         @if(isset($access[$nodes[$n]->id]) && $access[$nodes[$n]->id]->send == 1)
                             <input type="hidden" name="regs[{{ $nodes[$n]->id }}][send]" value="1" id="h_send_{{ $nodes[$n]->id }}">
-                            <input type="checkbox" class="checkbox" checked id="send_{{ $nodes[$n]->id }}">
+                            <input type="checkbox" class="checkbox" checked data-id="{{ $nodes[$n]->id }}" id="send_{{ $nodes[$n]->id }}">
                         @else
                             <input type="hidden" name="regs[{{ $nodes[$n]->id }}][send]" value="0" id="h_send_{{ $nodes[$n]->id }}">
-                            <input type="checkbox" class="checkbox" id="send_{{ $nodes[$n]->id }}">
+                            <input type="checkbox" class="checkbox" data-id="{{ $nodes[$n]->id }}" id="send_{{ $nodes[$n]->id }}">
                         @endif
                     </td>
                 </tr>

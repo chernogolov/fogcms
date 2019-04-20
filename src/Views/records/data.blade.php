@@ -35,25 +35,53 @@
                         </th>
                     @endisset
                 </tr>
-                @foreach ($records as $record)
+                @php $tabindex = 0 @endphp
+                    @foreach ($records as $record)
+                    @php $tabindex++ @endphp
                     <tr>
                         <td>
                             <input type="checkbox" class="for_check" name="check[{{ $record->id }}]" form="editForm">
                         </td>
                         @foreach($params['fields'] as $key => $field)
                             <td>
+                                @switch($field->type)
+                                    @case('rating')
+                                        <input type="number" id="rating-{{$record->id}}" tabindex="{{$tabindex}}" class="form-control change_rating" data-id="{{$record->id}}" value="{{$record->rating}}" style="width:65px;">
+                                    @break
+                                    @case('status')
+                                    @if($record->$key == 1)
+                                        <a id="{{$record->id}}" data-sid="0" data-id="{{$record->id}}" class="on_off" href="{{ route('onoff', ['rid' => $record->id, 'sid' => 0]) }}">
+                                            <div id="onoff_{{$record->id}}">
+                                                <img src="/img/on.png" class="off" title="{{__('On')}}">
+                                            </div>
+                                        </a>
+                                    @elseif($record->$key == 0)
+                                        <a id="{{$record->id}}" data-sid="1" data-id="{{$record->id}}" class="on_off" href="{{ route('onoff', ['rid' => $record->id, 'sid' => 1]) }}">
+                                            <div id="onoff_{{$record->id}}">
+                                                <img src="/img/off.png" title="{{__('Off')}}">
+                                            </div>
+                                        </a>
+                                    @endif
+                                    @break
+                                @endswitch
+
                                 <a href=" {{ route('edit_record', ['id' => $reg_id, 'rid' => $record->id]  )}} " id="{{$key}}_{{$record->id}}"  style="display: block;color: #333;text-decoration: none" title="Просмотр" class="selectable ajax" data-id="{{$record->id}}">
                                     @switch($field->type)
                                     @case('date')
                                         {{ date('Y-m-d H:i', $record->$key) }}
+                                    @break
+                                    @case('digit')
+                                        {{ $record->$key / 100 }}
                                     @break
                                     @case('image')
                                         @if(!empty($record->$key))
                                             <img src="/imagecache/small/{{ $record->$key }}" class="img-responsive">
                                     @endif
                                     @break
+                                    @case('rating')@break
+                                    @case('status')@break
                                     @default
-                                        {{ str_limit($record->$key, 50) }}
+                                        @isset($record->$key){{ str_limit(strip_tags($record->$key), 50) }}@endisset
                                     @endswitch
                                 </a>
                             </td>
@@ -78,9 +106,7 @@
                 @isset($delete)<button type="submit" data-destination="records" data-btn="delete" class="btn btn-default delete_records submit" id="delete-btn" name="delete" value="true" onclick="return confirm('{{__('Confirm delete')}}?');" form="editForm"><span class="mdi mdi-trash-can"></span>&nbsp;{{__('Delete')}}</button>@endisset
             </div>
             <div class="col-sm-2 col-xs-10 text-right">
-                @if(count($records)>0)
-                    <button type="button" data-destination="records" class="btn btn-default " id="export" data-id="{{ $node->id }}" form="editForm"><span class="mdi mdi-database-export"></span><span class="hidden-xs">&nbsp;{{__('Export')}}</span></button>
-                @endif
+                <button type="submit" data-destination="records" class="btn btn-default " id="export" data-id="{{ $node->id }}" form="editForm" name="export" value="true" ><span class="mdi mdi-database-export"></span><span class="hidden-xs">&nbsp;{{__('Export')}}</span></button>
             </div>
             <div class="col-sm-6 col-xs-12">
                 <br class="d-block d-sm-none">
@@ -106,13 +132,18 @@
             <div class="col-sm-12 collapse" id="collapseOptions">
                 <br>
                 <div class="row">
+                    <div class="col-12">
+                        <h5>
+                            {{__('Copying')}}
+                        </h5>
+                    </div>
                     <div class="col-sm-6 destination">
                         <select class="copy-records" multiple="multiple" name="destination[]" form="editForm">
                                 @foreach($nodes as $n)
                                     @if($n->id == $node->id)
                                         <option value="{{ $n->id }}" selected>@for ($i = 0; $i < $n->depth; $i++)&nbsp;&nbsp;@endfor{{ $n->name }}</option>
                                     @else
-                                        <option value="{{ $n->id }}" @if($n->is_summary === "1") disabled @endif @if($n->type !== "tickets") disabled @endif>
+                                        <option value="{{ $n->id }}" @if($n->is_summary === "1") disabled @endif @if($n->type !== "data") disabled @endif>
                                             @for ($i = 0; $i < $n->depth; $i++)&nbsp;&nbsp;@endfor{{ $n->name }}
                                         </option>
                                     @endif
@@ -127,6 +158,22 @@
                         <div class="btn-group float-right">
                             <button type="button" data-destination="records" data-btn="copy" class="btn btn-default btn-sm copy_records submit" id="copy-btn" name="copy" value="true" onclick="return confirm('{{__('Confirm copy')}}?');" form="editForm">
                                 {{__('Copy')}}
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                    <hr>
+                        <h5>
+                            {{__('Clear')}}
+                        </h5>
+                    </div>
+                    <div class="col-sm-10 col-12">
+                        <label>{{__('Delete all data in this journal: ') . $node->name }}&nbsp;</label>
+                    </div>
+                    <div class="col-sm-2 col-12">
+                        <div class="btn-group float-right">
+                            <button type="button" data-destination="records" data-btn="copy" class="btn btn-default btn-sm copy_records submit" id="copy-btn" name="clear" value="{{$node->id}}" onclick="return confirm('{{__('Are you sure? This action cannot be undone! ')}}')" form="editForm">
+                                {{__('Clear')}}
                             </button>
                         </div>
                     </div>

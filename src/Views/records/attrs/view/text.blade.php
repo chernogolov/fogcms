@@ -6,7 +6,7 @@
     </div>
     <div class="col-sm-7">
         @if(isset($attr->values->value))
-            {{ $attr->values->value }}
+            {!! $attr->values->value !!}
         @endif
     </div>
 </div>

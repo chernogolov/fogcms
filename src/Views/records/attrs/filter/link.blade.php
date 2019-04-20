@@ -52,7 +52,7 @@
                                 <input type="hidden" name="attr[{{ $name }}][save][]" value="{{ $v->id }}">
                                 <input type="hidden" name="attr[{{ $name }}][id]" value="{{ $v->id }}">
                             @endforeach
-                            <select class="col-sm-6  col-xs-6 sl sl-r" data-id="{{$meta}}" name="filters[{{ $name }}][{{$i}}][]" id="list-{{$meta}}" @if($is_required == 1) required="required" @endif>
+                            <select class="col-sm-6  col-xs-6 sl sl-r" data-id="{{$meta}}" name="filters[{{ $name }}][{{$i}}][]" id="list-{{$meta}}" >
                                 @foreach($values as $v)
                                     <option value="{{$v->value}}" selected>
                                         @foreach($v->fields as $key => $field)
@@ -62,7 +62,7 @@
                                 @endforeach
                             </select>
                         @else
-                            <select class="col-sm-6 col-xs-6 sl sl-r clear" data-id="{{$meta}}" name="filters[{{ $name }}][{{$i}}][]" id="list-{{$meta}}" @if($is_required == 1) required="required" @endif></select>
+                            <select class="col-sm-6 col-xs-6 sl sl-r clear" data-id="{{$meta}}" name="filters[{{ $name }}][{{$i}}][]" id="list-{{$meta}}" ></select>
                         @endif
                         <label id="attr_{{$name}}_value" class="hidden text-danger"></label>
                     </div>

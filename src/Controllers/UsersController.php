@@ -56,13 +56,14 @@ class UsersController extends PanelController
         $post_data = $request->all();
         if ($post_data)
         {
+
             if(isset($post_data['user']))
             {
                 $this->validate($request, [
-                    'user.name' => 'min:3|required|string|max:255',
+                    'user.name' => 'min:2|required|string|max:255',
                     'user.email' => 'required|string|email|max:255|unique:users,email',
                     'user.description' => 'max:190',
-                    'user.password' => 'required|string|min:6|confirmed',
+                    'user.password' => 'required|string|min:4|confirmed',
                 ]);
                 $res = User::create([
                     'name' => $post_data['user']['name'],
@@ -105,7 +106,7 @@ class UsersController extends PanelController
             if (isset($post_data['user']))
             {
                 if($post_data['user']['password'] != '' && $post_data['user']['password_confirmation'] !='')
-                    $this->validate($request, ['user.name' => 'min:3|required|string|max:255','user.description' => 'max:190','user.password' => 'required|string|min:6|confirmed']);
+                    $this->validate($request, ['user.name' => 'min:3|required|string|max:255','user.description' => 'max:190','user.password' => 'required|string|min:4|confirmed']);
                 else
                     $this->validate($request, ['user.name' => 'min:3|required|string|max:255','user.description' => 'max:190',]);
 

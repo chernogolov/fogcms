@@ -4,6 +4,7 @@ namespace Chernogolov\Fogcms\Controllers;
 
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -12,22 +13,81 @@ use Illuminate\Support\Facades\Config;
 use App\Http\Controllers\Controller;
 use Baum\Providers\BaumServiceProvider;
 use App\Notifications\AddRecord;
+use Chernogolov\Fogcms\Controllers\PanelController;
+use Chernogolov\Fogcms\Controllers\Lk\DevicesController;
 
-use App\Attr;
-use App\TmpUsers;
-use App\Options;
-use App\User;
-use App\RegsUsers;
-use App\Records;
-use App\Comments;
+
+use Chernogolov\Fogcms\Records;
+use Chernogolov\Fogcms\User;
+
+//use Chernogolov\Fogcms\Attr;
+//use Chernogolov\Fogcms\TmpUsers;
+//use Chernogolov\Fogcms\Options;
+//use Chernogolov\Fogcms\RegsUsers;
+//use Chernogolov\Fogcms\Comments;
 
 use Chernogolov\Fogcms\Reg;
 
-class LkController extends Controller
+class LkController extends PanelController
 {
     //
     public $title = '';
     public $nodes;
+    public $accounts_reg_id;
+    public $devices_reg_id;
+    public $add_values_reg_id;
+    public $tickets_reg_id;
+    public $qa_reg_id;
+    public $news_reg_id;
+    public $accepted_values_reg_id;
+    public $contacts_reg_id;
+    public $documents_reg_id;
+    public $accounts;
+    public $current_account = [];
+    public $template = 'fogcms::lk';
+    public $data = [];
+    public $messages = [];
+    public $params = [];
+
+    public $news_list_tpl = 'fogcms::lk/pages/news_list';
+
+    public function __construct()
+    {
+        parent::__construct();
+        $this->accounts_reg_id          = Config::get('fogcms.accounts_reg_id');
+        $this->devices_reg_id           = Config::get('fogcms.devices_reg_id');
+        $this->add_values_reg_id        = Config::get('fogcms.add_values_reg_id');
+        $this->tickets_reg_id           = Config::get('fogcms.tickets_reg_id');
+        $this->qa_reg_id                = Config::get('fogcms.qa_reg_id');
+        $this->news_reg_id              = Config::get('fogcms.news_reg_id');
+        $this->accepted_values_reg_id   = Config::get('fogcms.accepted_values_reg_id');
+        $this->contacts_reg_id          = Config::get('fogcms.contacts_reg_id');
+        $this->documents_reg_id         = Config::get('fogcms.documents_reg_id');
+    }
+
+    public function getAccounts()
+    {
+        if(empty($this->accounts))
+        {
+            $params = [];
+            $params['added_user'] = Auth::user()->id;
+            $params['offset'] = 0;
+            $this->accounts = Records::getRecords($this->accounts_reg_id, $params)->sortBy('address');
+            if($this->accounts->count()>0)
+            {
+                $current_account_id = session('ca' . Auth::user()->id);
+                if(!isset($current_account_id))
+                    $current_account_id = $this->accounts->first()->id;
+
+                $this->current_account = Records::getRecord($current_account_id);
+            }
+            else
+            {
+                $this->messages[] =  __("Add your account") . "<a href=\"". route('lk-accounts') . "\"><strong>" . __('here') . "</strong></a>" . __('for start');
+                $this->data['views'][] = view('fogcms::lk/pages/message', ['messages' => $this->messages]);
+            }
+        }
+    }
 
     public function getNodes()
     {
@@ -36,21 +96,96 @@ class LkController extends Controller
         $this->nodes = $root->descendantsAndSelf()->withoutNode($node)->where('is_public', '=', 1)->get();
     }
 
-    public function index(Request $request)
+    public function index()
     {
-        $this->getNodes();
-        $data['nodes'] = $this->nodes;
-        $data['views'] = array();
+        $this->getAccounts();
+        $this->title = __('Userarea');
+        $this->data['sidebar'][] = view('fogcms::lk/sidebar', ['accounts' => $this->accounts, 'current_account' => $this->current_account]);
+        $this->data['user'] = User::where('id', '=', Auth::user()->id)->first();
+        $this->data['current_account'] = $this->current_account;
+        $this->data['title'] = $this->title;
 
-        Auth::check() ? $this->title = __('Userarea') : $this->title = __('Home');
-        $data['title'] = $this->title;
+        return view($this->template, $this->data);
+    }
 
-        $data['views'][] = view('fogcms::lk/index');
+    public function home(Request $request)
+    {
+        $this->getAccounts();
+        if(empty($this->accounts))
+            return Redirect::route('lk-accounts');
 
-        if (Auth::check())
-            $userData['user'] = User::where('id', '=', Auth::user()->id)->first();
+        $this->data['views'][] = "<div class='col-12'><div class='mb-4'><h1>".__('Welcome!')."</h1></div></div>";
+        $this->news_list_tpl = 'fogcms::lk/home/news_list';
+        $this->params['limit'] = 2;
+        $this->params['orderBy'] = ['field' => 'rating', 'type' => 'DESC'];
+        $this->data['views'][] = $this->newsList($request, true);
 
-        return view('fogcms::lk', $data);
+        $devices = new DevicesController();
+        $devices->getDevicesData();
+        $devices->add_values_tpl = 'fogcms::lk/home/add_values';
+        $this->data['views'][] = $devices->addDevicesValues($request, true);
+
+        $devices->accepted_values_tpl = 'fogcms::lk/home/accepted_values';
+        $this->data['views'][] = $devices->getAcceptedValues($request, true);
+
+        return $this->index($request, $this->data);
+    }
+
+    public function account_change(Request $request, $id)
+    {
+        $request->session()->put('ca' . Auth::user()->id, $id);
+        return Redirect::back();
+    }
+
+    public function newsList(Request $request, $view = false, $params = [])
+    {
+        $this->getAccounts();
+        $this->data['title'] = $this->title;
+        $this->params['filters']['multiaddress']['whereIn'][] = null;
+        if(!empty($this->current_account)) {
+            foreach($this->accounts as $acc)
+            {
+                $this->params['filters']['multiaddress']['whereIn'][] = $acc->address_rid;
+            }
+        }
+
+        if(!isset($this->params['orderBy']))
+            $this->params['orderBy'] = ['attr' => 'Date','type' => 'DECS','field' => 'value'];
+
+        $news = Records::getRecords($this->news_reg_id, $this->params)->all();
+
+        if($view)
+            return view($this->news_list_tpl, ['news' => $news]);
+        else
+        {
+            $this->data['views'][] = view($this->news_list_tpl, ['news' => $news]);
+            return $this->index($request, $this->data);
+        }
+    }
+
+    public function newsItem(Request $request, $id)
+    {
+        $this->data['title'] = $this->title;
+        $item = Records::getRecord($id);
+        $this->data['views'][] = view('fogcms::lk/pages/news_item', ['item' => $item]);
+        return $this->index($request, $this->data);
+    }
+
+    public function userMessages(Request $request)
+    {
+        $user = User::find(Auth::user()->id);
+
+        $post_data = $request->all();
+        if ($post_data)
+        {
+            if(isset($post_data['mark-as-read']))
+                $user->unreadNotifications->markAsRead();
+            if(isset($post_data['delete-all']))
+                $user->notifications()->delete();
+        }
+
+        $this->data['views'][] = view('fogcms::lk/pages/messages', ['user' => $user]);
+        return $this->index($request, $this->data);
     }
 
     public function create(Request $request, $id, $from_rid = null)
@@ -294,7 +429,7 @@ class LkController extends Controller
                 }
             }
 
-            $data['views'][] = view('/panel/lk/appeal/view', ['data' => $record]);
+            $data['views'][] = view('focms::lk/appeal/view', ['data' => $record]);
 
             $attrs = Attr::getRecordAttrs($rid);
             foreach($attrs as $attr)
@@ -313,6 +448,7 @@ class LkController extends Controller
 
         $data['title'] = $this->title;
 
-        return view('/panel/lk', $data);
+        return view('fogcms::lk', $data);
     }
+
 }

@@ -7,7 +7,7 @@
             <span class="text-muted">
                 После сохранения перейти в список&nbsp;&nbsp;<input form="editForm"  type="checkbox" name="to_list" value="1" @if(isset($to_list)) {{$to_list}} @endif>&nbsp;&nbsp;&nbsp;
             </span>
-        <div class="visible-xs">
+        <div class="d-block d-sm-none">
             <br>
             <button type="submit" data-destination="records" data-btn="save-xs" id="save-xs-btn" form="editForm" class="btn btn-primary form-control submit">Сохранить</button>
         </div>

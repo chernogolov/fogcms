@@ -2,15 +2,20 @@
 
 namespace Chernogolov\Fogcms\Controllers;
 
+use Chernogolov\Fogcms\Imports\RecordsImport;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Notification;
+use Maatwebsite\Excel\Facades\Excel;
+
 use Illuminate\Http\Request;
 
 use Chernogolov\Fogcms\Controllers\PanelController;
-use App\Notifications\AddRecord;
+use Chernogolov\Fogcms\Notifications\AddRecord;
+use Chernogolov\Fogcms\Notifications\EditRecord;
+use Chernogolov\Fogcms\Notifications\AccountApproved;
 
 use Chernogolov\Fogcms\Reg;
 use Chernogolov\Fogcms\RegsUsers;
@@ -21,8 +26,7 @@ use Chernogolov\Fogcms\RecordsRegs;
 use Chernogolov\Fogcms\User;
 use Chernogolov\Fogcms\Options;
 use Chernogolov\Fogcms\TmpUsers;
-use Chernogolov\Fogcms\Excel;
-
+//use Chernogolov\Fogcms\Excel;
 
 class RecordsController extends PanelController
 {
@@ -192,9 +196,11 @@ class RecordsController extends PanelController
                 !empty($params['fields']) ? $request->session()->put('flds'.$id, $params['fields']) : $request->session()->forget('flds'.$id);
             }
 
+
             if(isset($post_data['import_file']))
             {
-                Excel::importData($id, $request->file('import_file'));
+                Excel::import(new RecordsImport($id), request()->file('import_file'));
+//                Excel::importData($id, $request->file('import_file'));
                 return redirect(route('reg_records', ['id' => $id]));
             }
 
@@ -212,12 +218,17 @@ class RecordsController extends PanelController
                 return redirect(route('reg_records', ['id' => $id]));
         }
 
+        //export journal data
         if(isset($post_data['export']))
         {
             $params['limit'] = 9999999;
             $data['records'] = Records::getRecords($id, $params);
             return Excel::exportData($data['records'], $this->node);
         }
+
+        //clear journal
+        if(isset($post_data['clear']))
+            $data['records'] = Records::clearReg($post_data['clear']);
 
         $data['records'] = Records::getRecords($id, $params);
 
@@ -243,7 +254,7 @@ class RecordsController extends PanelController
     {
         $this->options = Options::getOptions('view', true);
         $this->node = Reg::where('id', '=', $id)->first();
-        $this->title .= __('View');
+        $this->title .= __('Overview');
 
         $request_data = $request->all();
         if(isset($request_data['change-status']))
@@ -267,7 +278,6 @@ class RecordsController extends PanelController
         ));
 
         $attrs = Attr::getRegsAttrs($id, $rid);
-//        dd($attrs);
 
         foreach($attrs as $attr)
         {
@@ -295,8 +305,7 @@ class RecordsController extends PanelController
             else
             {
                 $additional['creator'] = $tmp_user;
-                $additional['creator'] ? $additional['creator']['name'] .= ' (временный)' : null;
-
+                $additional['creator'] ? $additional['creator']['name'] .= ' (' . __('temporary') . ' ) ' : null;
             }
         }
 
@@ -369,9 +378,7 @@ class RecordsController extends PanelController
                         file_get_contents('https://api.telegram.org/bot608599411:AAFPZIybZ-O9-t4y_rlRxmtQV4i-sV8aF6c/sendMessage?chat_id=293756888&text=gkh2 send ' . $user->email . ' notification error ' . $e);
                     }
                 }
-
             }
-
 
             //go to list function
             if(isset($post_data['to_list']))
@@ -402,16 +409,19 @@ class RecordsController extends PanelController
         $this->node = Reg::where('id', '=', $id)->first();
         $this->title .= __('Edit');
         isset($post_data['post_data']['back']) ? $back = $post_data['post_data']['back'] : $back = route('reg_records', ['id' => $id]);
-
         $attrs = Attr::getRegsAttrs($id);
-        foreach($attrs as $attr)
-            if($attr->is_required)
-                $validate_attr['attr.'.$attr->name.'.value'] = 'required';
 
         $post_data = $request->all();
         if($post_data)
         {
-            $this->validate($request, $validate_attr);
+            foreach($attrs as $attr)
+            {
+                if($attr->is_required && !isset($post_data['attr'][$attr->name]['save']))
+                    $validate_attr['attr.'.$attr->name.'.value'] = 'required';
+            }
+
+
+            $request->validate($validate_attr);
             Records::saveRecord(null, $post_data['record'], $post_data['attr']);
 
             //go to list function
@@ -467,6 +477,7 @@ class RecordsController extends PanelController
 
     public function change_status(Request  $request, $rid, $sid = null)
     {
+        $sid = 1;
         $post_data = $request->all();
 
         if(isset($post_data['sid']))
@@ -474,13 +485,33 @@ class RecordsController extends PanelController
 
         if($sid)
         {
-            return Records::changeRecordStatus($rid, $sid);
+            $rsid = Records::changeRecordStatus($rid, $sid);
+
+            if($rsid)
+            {
+                $record = Records::getRecord($rid, false);
+                $regs = Records::getRecordRegs($rid)->get();
+                foreach ($regs as $reg) {
+                    $user_sends = RegsUsers::where([['user_id', '=', $record['user_id']], ['reg_id', '=', $reg->id]])->get();
+                    $channels = [];
+                    foreach ($user_sends as $send)
+                        if(intval($send->email) == 1)
+                            $channels[] = 'mail';
+
+                    $user = User::where('id', '=', $record['user_id'])->first();
+                    try {
+                        Notification::send($user, new EditRecord($rid, '', $channels));
+                    } catch (\Exception $e) {
+                        file_get_contents('https://api.telegram.org/bot608599411:AAFPZIybZ-O9-t4y_rlRxmtQV4i-sV8aF6c/sendMessage?chat_id=293756888&text=gkh2 send ' . $user->email . ' notification error ' . $e);
+                    }
+                }
+
+                return $rsid;
+            }
 
             if(!isset($post_data['sid']))
                 return redirect()->route('view_record', ['rid' => $rid]);
         }
-        else
-            return false;
     }
 
     public function document($id, $rid)
@@ -528,7 +559,7 @@ class RecordsController extends PanelController
             if($attr->is_filter == 1)
                 $params['fields'][$attr->name] = $params['default_fields'][$attr->name];
 
-            View::exists('fogcms::records/attrs/data/'.$template) ? $params['default_fields'][$attr->name]['data_template'] = 'panel/records/attrs/data/'.$template : null;
+            View::exists('fogcms::records/attrs/data/'.$template) ? $params['default_fields'][$attr->name]['data_template'] = 'fogcms::records/attrs/data/'.$template : null;
         }
 
         $template = $this->node['type'];
@@ -559,5 +590,23 @@ class RecordsController extends PanelController
         $data['params'] = $params;
 
         return view('fogcms::records/'.$template, $data);
+    }
+
+    public function onoff(Request  $request, $rid, $sid)
+    {
+        return Records::OnOff($rid, $sid);
+    }
+
+    public function rate(Request  $request, $rid)
+    {
+        $post_data = $request->all();
+
+        if(isset($post_data['rating']))
+            $rating = $post_data['rating'];
+
+        if(isset($rating))
+        {
+            return Records::Rate($rid, $rating);
+        }
     }
 }

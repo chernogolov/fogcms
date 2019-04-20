@@ -41,8 +41,8 @@ class OptionsController extends PanelController
         $post_data = $request->all();
         $title = 'Настройка уведомлений';
 
-        $views[] = view('panel/options/notify_regs', $data);
-        return view('panel/options', array('views' => $views, 'title' => $title));
+        $views[] = view('fogcms::options/notify_regs', $data);
+        return view('fogcms::options', array('views' => $views, 'title' => $title));
     }
 
     public function account(Request  $request)
@@ -55,7 +55,7 @@ class OptionsController extends PanelController
             if (isset($post_data['user']))
             {
                 if($post_data['user']['password'] != '' && $post_data['user']['password_confirmation'] !='')
-                    $this->validate($request, ['user.name' => 'min:3|required|string|max:255','user.description' => 'max:190','user.password' => 'required|string|min:6|confirmed', 'user.phone' => 'min:6|numeric|max:15']);
+                    $this->validate($request, ['user.name' => 'min:3|required|string|max:255','user.description' => 'max:190','user.password' => 'required|string|min:4|confirmed', 'user.phone' => 'min:6|max:15']);
                 else
                     $this->validate($request, ['user.name' => 'min:3|required|string|max:255','user.description' => 'max:190', 'user.phone' => 'numeric']);
 

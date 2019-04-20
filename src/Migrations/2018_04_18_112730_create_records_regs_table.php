@@ -18,9 +18,9 @@ class CreateRecordsRegsTable extends Migration
         Schema::create('records_regs', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('records_id')->unsigned();
-            $table->foreign('records_id')->references('id')->on('records');
+            $table->foreign('records_id')->references('id')->on('records')->onDelete('cascade');
             $table->integer('regs_id')->unsigned();
-            $table->foreign('regs_id')->references('id')->on('regs');
+            $table->foreign('regs_id')->references('id')->on('regs')->onDelete('cascade');
             $table->index('records_id');
             $table->index('regs_id');
         });

@@ -55,14 +55,21 @@ $(function()
         {
             var text = $(this).val();
             var id = $(this).data('id');
+            if($(this).data('limit') != undefined)
+                var limit = $(this).data('limit');
+            else
+                var limit = 20;
+            var destination = 'list-'+id;
+            var sel = $('#'+destination).data('vls') + '';
+            var selarr = sel.split(',');
             delay(function(){
-                var destination = 'list-'+id;
+
                 if(text.length > 1)
                 {
                     $.ajax({
                         url: "/search/"+id,
                         type: "POST",
-                        data: {text:text},
+                        data: {text:text,limit:limit},
                         headers: {
                             'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
                         },
@@ -71,6 +78,12 @@ $(function()
                         },
                         success: function (data) {
                             $('#'+destination).html(data);
+                            if(typeof selarr == 'array' || typeof selarr == 'object')
+                            {
+                                $.each(selarr, function(index, value){
+                                    $("#"+destination+" option[value='"+value+"']").attr("selected", "selected");
+                                });
+                            }
                             var filter = {[$('#similar-'+id).data('attr')] : { 0 :[$('#similar-'+id).data('attr'), '=', $("#list-" + id + " option:selected").val()]}};
                     $('#similar-'+id).removeClass('disabled').data("filter", filter);
                     $('#myModal' + id + ' span').html($("#list-" + id + " option:selected").text());
@@ -92,7 +105,6 @@ $(function()
     })
     var id = $(this).data('id');
     var rid = $(this).data('rid');
-    alert(id);
     $('#val-'+id).val(rid);
 })
     .on('click', '.set_record', function(e){
@@ -103,6 +115,7 @@ $(function()
         $('#sf_'+attr).val(rvalue);
         $('.searchData').html('');
     })
+    //формы с классом submit
     .on("click", '.submit', function(e){
         e.preventDefault();
         var formId = $(this).attr('form');
@@ -116,8 +129,14 @@ $(function()
         }
 
         var url = $('#'+formId).prop('action');
+
         var formData = new FormData($('#'+formId)[0]);
         formData.append($(this).prop('name'), $(this).val());
+
+        for(var pair of formData.entries())
+        if(formData.get(pair[0]).size!= undefined && formData.get(pair[0]).size == 0)
+            formData.delete(pair[0]);
+
         $.ajax({
             url: url,
             cache:false,
@@ -146,7 +165,9 @@ $(function()
             }
         });
 
-    }).on("click", '.ajax', function(e){
+    })
+    //любая ссылка с классом ajax
+    .on("click", '.ajax', function(e){
         e.preventDefault();
         var destination = 'records';
         var url = $(this).prop('href');
@@ -168,54 +189,146 @@ $(function()
             }
         });
 
-    }).on("click", '.change_status', function(e){
+    })
+    //пагинация
+    .on("click", '.pagination .page-item .page-link', function(e){
         e.preventDefault();
+        var destination = 'records';
         var url = $(this).prop('href');
-        var id=$(this).data("id");
         $.ajax({
-            url: '/panel/status/'+id,
-            data: {sid:$(this).data("sid")},
-            type: "GET",
+            url: url,
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            data: {},
+            type: "POST",
             beforeSend: function() {
-                $('#status_'+id).html('<img src="/vendor/chernogolov/fogcms/public/img/load_min.gif">');
+                $('#'+destination+' #head-image').html('<img src="/vendor/chernogolov/fogcms/public/img/load_min.gif" style="height: 22px;">&nbsp;&nbsp;Загрузка...');
             },
             success: function (data) {
-                $('#status_'+id).html(data['status'])
-                $('#item_'+id).prop('class', data['class']);
+                $('#'+destination).html(data);
+            },
+            error: function (msg) {
+                $('#'+destination).html(msg);
+            }
+        });
+    }).on("click", '.change_status', function(e) {
+        e.preventDefault();
+        var url = $(this).prop('href');
+        var id = $(this).data("id");
+        $.ajax({
+            url: '/panel/status/' + id,
+            data: {sid: $(this).data("sid")},
+            type: "GET",
+            beforeSend: function () {
+                $('#status_' + id).html('<img src="/vendor/chernogolov/fogcms/public/img/load_min.gif">');
+            },
+            success: function (data) {
+                $('#status_' + id).html(data['status'])
+                $('#item_' + id).prop('class', data['class']);
             },
             error: function (msg) {
                 $('#records').html(msg);
             }
         });
-
-    }).on("click", '#export', function(e){
-        e.preventDefault();
-        var formId = $(this).attr('form');
-        var formData = new FormData($('#editForm')[0]);
-        var url = $('#'+formId).prop('action');
-        formData.append('export', '1');
+    }).on("blur", '.change_rating', function(e){
+        var rid = $(this).data('id');
+        var rvalue = $(this).val();
+        if(rvalue == undefined)
+            rvalue = 0;
         $.ajax({
-            url: url,
-            cache:false,
-            contentType: false,
-            processData: false,
+            url: '/panel/rate/' + rid,
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
-            data: formData,
             type: "POST",
-            beforeSend: function() {
-                $('#export').html('<img src="/vendor/chernogolov/fogcms/public/img/load_min.gif">').attr('disabled',true);
+            data: {rating: rvalue},
+            beforeSend: function () {
             },
             success: function (data) {
-                window.open('/'+data, '_blank');
-                window.close();
-                $('#export').html('<span class="glyphicon glyphicon-export"></span>&nbsp;Экспорт').removeAttr('disabled');
+                $('#rating-'+rid).css('border','green solid 1px');
             },
             error: function (msg) {
-                console.log(msg);
+                $('#records').html(msg);
             }
         });
+    })
+        .on("keydown", '.change_rating', function(e){
+            if(e.keyCode === 13) {
+                e.preventDefault();
+                var rid = $(this).data('id');
+                var rvalue = $(this).val();
+                if(rvalue == undefined)
+                    rvalue = 0;
+                $.ajax({
+                    url: '/panel/rate/' + rid,
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    type: "POST",
+                    data: {rating: rvalue},
+                    beforeSend: function () {
+                    },
+                    success: function (data) {
+                        $('#rating-'+rid).css('border','green solid 1px');
+                    },
+                    error: function (msg) {
+                        $('#records').html(msg);
+                    }
+                });
+            }
+        }).on("click", '.on_off', function(e){
+            e.preventDefault();
+            var url = $(this).prop('href');
+            var id = $(this).data("id");
+            var sid = $(this).data("sid");
+            $.ajax({
+                url: '/panel/onoff/' + id + '/' + sid,
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                type: "POST",
+                data: {},
+                beforeSend: function () {
+                    $('#onoff_' + id).html('<img src="/img/load_min.gif">');
+                },
+                success: function (data) {
+                    $('#onoff_' + id).html(data['status']);
+                    $('#'+id).data("sid", data['change']);
+                },
+                error: function (msg) {
+                    $('#records').html(msg);
+                }
+            });
+        }).on("click", '#export', function(e){
+            e.preventDefault();
+            var formId = $(this).attr('form');
+            var formData = new FormData($('#editForm')[0]);
+            var url = $('#'+formId).prop('action');
+            formData.append('export', '1');
+            $.ajax({
+                url: url,
+                cache:false,
+                contentType: false,
+                processData: false,
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                data: formData,
+                type: "POST",
+                beforeSend: function() {
+                    $('#export').html('<img src="/vendor/chernogolov/fogcms/public/img/load_min.gif">').attr('disabled',true);
+                },
+                success: function (data) {
+                    console.log(data);
+                    window.open('/'+data, '_blank');
+                    window.close();
+                    $('#export').html('<span class="glyphicon glyphicon-export"></span>&nbsp;Экспорт').removeAttr('disabled');
+                },
+                error: function (data) {
+                    console.log(data);
+                }
+            });
     });
 
 $( document ).on("click", '#create_tmp_user', function()
@@ -249,7 +362,6 @@ $('.checkbox').on('change', function(){
         $('#'+this.id).val(1);
     }
 });
-
 
 $('.checkbox2').on('change', function(){
     this.value = this.checked ? 1 : 0;

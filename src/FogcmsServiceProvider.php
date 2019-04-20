@@ -10,6 +10,8 @@ class FogcmsServiceProvider extends ServiceProvider
 {
     public function boot()
     {
+        \Debugbar::disable();
+
         $this->mergeConfigFrom(__DIR__ . '/../config/fogcms.php', 'fogcms');
 
         if(is_dir(__DIR__ . '/Migrations')) {

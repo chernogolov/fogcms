@@ -71,7 +71,9 @@
                                                 <img src="/imagecache/small/{{ $record->$key }}" class="img-responsive">
                                             @endif
                                             @break
-
+                                            @case('digit')
+                                                {{ $record->$key / 100 }}
+                                            @break
                                             @case('status')
                                             @if($record->$key == 1)
                                                 {{__('New')}}
@@ -80,11 +82,11 @@
                                             @elseif($record->$key == 3)
                                                 {{__('Completed')}}
                                             @elseif($record->$key == 4)
-                                                {{__('Close by author')}}
+                                                {{__('Closed by author')}}
                                             @endif
                                             @break
                                             @default
-                                            {{ str_limit($record->$key, 50) }}
+                                                @isset($record->$key){{ str_limit(strip_tags($record->$key), 50) }}@endisset
                                             @endswitch
                                         @endif
                                     </a>
