@@ -74,14 +74,14 @@
 						<div class="collapse navbar-collapse col-12 col-sm-6 col-md-5" id="navbarSupportedContent">
 						   	<p class="address-text my-auto d-none d-lg-inline-block">
                                 <a href="{{route('news')}}" class="header-link">
-                                    <span class="mdi mdi-newspaper mdi-light mdi-24px float-left"></span><small class="float-left d-none d-lg-block">Новости</small>
+                                    <span class="mdi mdi-newspaper mdi-light mdi-24px float-left"></span><small class="float-left d-none d-lg-block">{{__('News')}}</small>
                                 </a>
                                 <a href="{{route('messages')}}" class="header-link">
                                     <span class="mdi mdi-email mdi-light mdi-24px float-left">@if(count($user->unreadNotifications)>0)<sub>{{count($user->unreadNotifications)}}</sub>@endif</span>
-                                    <small class="float-left d-none d-lg-block">Сообщения</small>
+                                    <small class="float-left d-none d-lg-block">{{__('Messages')}}</small>
                                 </a>
                                 <a href="{{route('contacts')}}" class="header-link">
-                                    <span class="mdi mdi-contacts mdi-light mdi-24px float-left"></span><small class="float-left d-none d-lg-block">Контакты</small>
+                                    <span class="mdi mdi-contacts mdi-light mdi-24px float-left"></span><small class="float-left d-none d-lg-block">{{__('Contacts')}}</small>
                                 </a>
 						   	</p>
 						   	<div class="slidebar d-lg-none">
@@ -100,6 +100,15 @@
                                               </li>
                                               <li class="list-group-item active">
                                                 <a href="{{route('finance')}}">{{__('Finance')}}</a>
+                                              </li>
+                                              <li class="list-group-item active">
+                                                    <a href="{{route('news')}}">{{__('News')}}</a>
+                                              </li>
+                                              <li class="list-group-item active">
+                                                    <a href="{{route('messages')}}">{{__('Messages')}} @if(count($user->unreadNotifications)>0)<span class="badge badge-pill">{{count($user->unreadNotifications)}}</span>@endif</a>
+                                              </li>
+                                              <li class="list-group-item active">
+                                                    <a href="{{route('contacts')}}">{{__('Contacts')}}</a>
                                               </li>
                                             </ul>
                                             <div class="logout mt-5">
@@ -124,6 +133,7 @@
                                 <div class="dropdown-menu p-4 text-muted w-100">
                                     <a class="dropdown-item" href="{{route('lk-profile')}}">{{__('Profile settings')}}</a>
                                     <a class="dropdown-item" href="{{route('lk-accounts')}}">{{__('My accounts')}}</a>
+                                    <a class="dropdown-item" href="{{route('lk-notifications')}}">{{__('Notifications')}}</a>
                                     <a class="dropdown-item" href="{{route('lk-password')}}">{{__('Password')}}</a>
                                     <div class="dropdown-divider"></div>
                                     <a onclick="event.preventDefault(); document.getElementById('logout-form').submit();" href="{{ route('logout') }}" class="dropdown-item"><span>{{__('Exit')}}</span></a>

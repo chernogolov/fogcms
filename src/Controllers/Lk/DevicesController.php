@@ -28,6 +28,7 @@ class DevicesController extends LkController
 
     public function getDevices(Request $request, $view = false)
     {
+        $this->title = __('Devices');
         !$view ? $this->getDevicesData() : null;
         if(empty($this->current_account))
             return Redirect::route('lk-accounts');
@@ -52,6 +53,7 @@ class DevicesController extends LkController
     public function getDevicesData()
     {
         $this->getAccounts();
+        $devices = [];
 
         if(!empty($this->current_account)) {
 
@@ -65,8 +67,6 @@ class DevicesController extends LkController
              ];
             $devices = Records::getRecords($this->devices_reg_id, $params);
         }
-        else
-            return Redirect::route('lk-accounts');
 
         $this->devices = $devices;
 
@@ -74,6 +74,8 @@ class DevicesController extends LkController
 
     public function getAcceptedValues(Request $request, $view = false)
     {
+        $this->title = __('Accepted values');
+
         !$view ? $this->getDevicesData() : null;
 
         if(!empty($this->current_account))
@@ -92,6 +94,7 @@ class DevicesController extends LkController
 
     public function addDevicesValues(Request $request, $view = false)
     {
+        $this->title = __('Add devices values');
         !$view ? $this->getDevicesData() : null;
 
         $post_data = $request->all();
@@ -158,6 +161,7 @@ class DevicesController extends LkController
 
     public function getSendetValues(Request $request)
     {
+        $this->title = __('Get sendet values');
         $values = [];
 
         $post_data = $request->all();
@@ -185,15 +189,15 @@ class DevicesController extends LkController
     public function utilities(Request $request)
     {
         $this->getDevicesData();
+        if(!empty($this->current_account))
+        {
+            $this->data['views'][] = $this->getDevices($request, true);
+            $this->data['views'][] = $this->addDevicesValues($request, true);
+            $this->data['views'][] = $this->getSendetValues($request, $this->devices);
 
-        if(empty($this->current_account))
-            return Redirect::route('lk-accounts');
-
-        $this->data['views'][] = $this->getDevices($request, true);
-        $this->data['views'][] = $this->addDevicesValues($request, true);
-        $this->data['views'][] = $this->getSendetValues($request, $this->devices);
-
-        $this->data['views'][] = $this->getAcceptedValues($request, true);
+            $this->data['views'][] = $this->getAcceptedValues($request, true);
+        }
+        $this->title = __('Utilites');
 
         return $this->index();
     }

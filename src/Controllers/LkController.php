@@ -76,7 +76,7 @@ class LkController extends PanelController
             if($this->accounts->count()>0)
             {
                 $current_account_id = session('ca' . Auth::user()->id);
-                if(!isset($current_account_id))
+                if(!isset($current_account_id) || !$current_account_id)
                     $current_account_id = $this->accounts->first()->id;
 
                 $this->current_account = Records::getRecord($current_account_id);
@@ -99,7 +99,7 @@ class LkController extends PanelController
     public function index()
     {
         $this->getAccounts();
-        $this->title = __('Userarea');
+
         $this->data['sidebar'][] = view('fogcms::lk/sidebar', ['accounts' => $this->accounts, 'current_account' => $this->current_account]);
         $this->data['user'] = User::where('id', '=', Auth::user()->id)->first();
         $this->data['current_account'] = $this->current_account;
@@ -128,6 +128,8 @@ class LkController extends PanelController
         $devices->accepted_values_tpl = 'fogcms::lk/home/accepted_values';
         $this->data['views'][] = $devices->getAcceptedValues($request, true);
 
+        $this->title = __('Userarea');
+
         return $this->index($request, $this->data);
     }
 
@@ -140,7 +142,7 @@ class LkController extends PanelController
     public function newsList(Request $request, $view = false, $params = [])
     {
         $this->getAccounts();
-        $this->data['title'] = $this->title;
+        $this->title = __('News');
         $this->params['filters']['multiaddress']['whereIn'][] = null;
         if(!empty($this->current_account)) {
             foreach($this->accounts as $acc)
@@ -153,7 +155,6 @@ class LkController extends PanelController
             $this->params['orderBy'] = ['attr' => 'Date','type' => 'DECS','field' => 'value'];
 
         $news = Records::getRecords($this->news_reg_id, $this->params)->all();
-
         if($view)
             return view($this->news_list_tpl, ['news' => $news]);
         else
@@ -165,14 +166,17 @@ class LkController extends PanelController
 
     public function newsItem(Request $request, $id)
     {
-        $this->data['title'] = $this->title;
+        $this->title = $this->title;
         $item = Records::getRecord($id);
         $this->data['views'][] = view('fogcms::lk/pages/news_item', ['item' => $item]);
         return $this->index($request, $this->data);
     }
 
-    public function userMessages(Request $request)
+    public function userMessages(Request $request, $view = false)
     {
+        $this->getAccounts();
+        $this->title = __('Messages');
+
         $user = User::find(Auth::user()->id);
 
         $post_data = $request->all();
@@ -184,8 +188,13 @@ class LkController extends PanelController
                 $user->notifications()->delete();
         }
 
-        $this->data['views'][] = view('fogcms::lk/pages/messages', ['user' => $user]);
-        return $this->index($request, $this->data);
+        if($view)
+            return view('fogcms::lk/pages/messages', ['user' => $user]);
+        else
+        {
+            $this->data['views'][] = view('fogcms::lk/pages/messages', ['user' => $user]);
+            return $this->index($request, $this->data);
+        }
     }
 
     public function create(Request $request, $id, $from_rid = null)

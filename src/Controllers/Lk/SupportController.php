@@ -35,6 +35,8 @@ class SupportController extends LkController
         $this->data['views'][] = $this->getTickets($request, true);
         $this->data['views'][] = $this->documentsList($request, true);
 
+        $this->title = __('Support center');
+
         return $this->index();
     }
 
@@ -144,8 +146,9 @@ class SupportController extends LkController
 
     public function getTickets(Request $request, $view = false)
     {
+        $this->title = __('Tickets');
+
         $node = Reg::where('id', '=', $this->tickets_reg_id)->first();
-        $this->title = __('My tickets');
 
         $attrs = Attr::getFields($node, ['entry']);
         $records = Records::getRecords(null, array('user_id' => Auth::user()->id, 'type' => 'tickets', 'fields' => $attrs['fields']));
@@ -238,8 +241,9 @@ class SupportController extends LkController
 
     public function qA(Request $request, $view = false)
     {
-        $d = [];
 
+        $d = [];
+        $this->title = __('Qa');
         $params = [];
         $params['orderBy'] = [
             'type' => 'ASC',
@@ -260,7 +264,7 @@ class SupportController extends LkController
     public function contactList(Request $request)
     {
         $this->getAccounts();
-        $this->data['title'] = $this->title;
+        $this->title = __('Contacts');
         $params = [];
         $params['filters']['multiaddress']['whereIn'][] = null;
         if(!empty($this->current_account)) {
@@ -279,8 +283,10 @@ class SupportController extends LkController
 
     public function contactItem(Request $request, $id)
     {
-        $this->data['title'] = $this->title;
         $item = Records::getRecord($id);
+
+        isset($item['title']) ? $this->title = $item['title'] : $this->title = __('Contact');
+
         $this->data['views'][] = view('fogcms::lk/pages/contact_item', ['item' => $item]);
         return $this->index($request, $this->data);
     }
@@ -288,7 +294,8 @@ class SupportController extends LkController
     public function documentsList(Request $request, $view = false)
     {
         $this->getAccounts();
-        $this->data['title'] = $this->title;
+        $this->title = __('Documents');
+
         $params = [];
         $params['filters']['multiaddress']['whereIn'][] = null;
         if(!empty($this->current_account)) {

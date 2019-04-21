@@ -22,8 +22,8 @@
     <div class="container-input mb-4">
         <div class="row">
             <div class="col-lg-12">
-                <h1 class="blue float-left">{{__('Accepted meter values')}} </h1>
-                <small class="text-muted float-right">{{__('From')}} {{$firstdate}}</small>
+                <h1 class="blue float-none float-lg-left">{{__('Accepted meter values')}} </h1>
+                <small class="text-muted float-left float-lg-right mt-3 mt-lg-0">{{__('From')}} {{$firstdate}}</small>
             </div>
         </div>
         @if($devices->total()>0)
@@ -83,7 +83,9 @@
         </form>
         <div class="row">
             <div class="col-12">
-                <canvas id="myChart" class="w-100 mt-5" style="position:relative;"></canvas>
+                <div style="height: 400px !important;">
+                    <canvas id="myChart" class="mt-5 w-100"  height="400"></canvas>
+                </div>
             </div>
             <div class="col-12 pt-4 text-center">
                 <small class="text-muted">{{__('Press color block for on/off graph line')}}</small>
@@ -92,7 +94,7 @@
         @else
            <div class="row mt-4 mb-4">
                <div class="col-12">
-                   <span class="mdi mdi-clock-fast mdi-36px d-block pt-3 float-left" style="height: 36px;"></span><span class="float-left d-block pt-3 pl-3">{{__('Data coming soon')}}</span>
+                   <span class="mdi mdi-clock-fast mdi-36px d-block pt-3 float-lg-right mt-3 mt-lg-0" style="height: 36px;"></span><span class="float-left d-block pt-3 pl-3">{{__('Data coming soon')}}</span>
                </div>
            </div>
         @endif

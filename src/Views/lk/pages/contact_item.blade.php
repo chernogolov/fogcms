@@ -25,6 +25,7 @@
                      <div class="mt-3 mb-4">
                         {!!$item['contact']!!}
                      </div>
+                     <a class="btn btn btn-outline-dark mt-2 float-left" href="{{route('lk')}}">{{__('Home')}}</a>
                      <a class="btn btn btn-outline-dark mt-2 float-sm-right" href="{{route('contacts')}}">{{__('Contact book')}}</a>
                 </div>
             </div>

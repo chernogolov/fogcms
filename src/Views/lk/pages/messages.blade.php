@@ -19,7 +19,7 @@
                <div class="row">
                     @foreach($user->notifications()->paginate(20) as $note)
                         <div class="col-12 mb-3">
-                            <div class="media  message pt-2 pb-3 pl-0 pr-0 pl-lg-3 pr-lg-3 @if(!$note->read_at) unread @endif">
+                            <div class="media message pt-2 pb-3 pl-3 pr-0 pr-lg-3 @if(!$note->read_at) unread @endif">
                               <div class="media-body">
                                 <h3 class="mb-2">
                                     @isset($note->data['theme']){{$note->data['theme']}}@endisset

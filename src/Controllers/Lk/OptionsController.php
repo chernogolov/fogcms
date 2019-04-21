@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Carbon;
 
 use Chernogolov\Fogcms\Controllers\ImageController;
-use Chernogolov\Fogcms\Controllers\LkController;
+use Chernogolov\Fogcms\Controllers\PanelController;
 
 use Chernogolov\Fogcms\Options;
 use Chernogolov\Fogcms\User;
@@ -22,7 +22,7 @@ use Illuminate\Support\Facades\Session;
 use Chernogolov\Fogcms\Reg;
 
 
-class OptionsController
+class OptionsController extends PanelController
 {
     /**
      * Show the options.
@@ -66,12 +66,14 @@ class OptionsController
             {
                 foreach($post_data['regs'] as $key => $reg)
                 {
+                    $reg = array_map('intval', $reg);
                     $insertdata = array('reg_id' => $key, 'user_id' => intval(Auth::user()->id));
                     $insertdata = array_merge($insertdata, $reg);
-
                     if(!RegsUsers::where([['reg_id', '=', $key],['user_id', '=', Auth::user()->id]])->update($insertdata))
+                    {
                         RegsUsers::create($insertdata);
-
+                        RegsUsers::where([['reg_id', '=', $key],['user_id', '=', Auth::user()->id]])->update($insertdata);
+                    }
                 }
             }
         }

@@ -1,10 +1,12 @@
 <div class="d-none d-lg-block">
     <div class="slidebar-left d-flex flex-column justify-content-between mt-4 ">
-        @if(isset($current_account['address.photo']))
-            <img src="/imagecache/house/{{$current_account['address.photo']}}" class="img-fluid">
-        @else
-            <img src="/public/img/ekb.jpg" class="img-fluid">
-        @endif
+        <a class="d-flex flex-column justify-content-between" href="{{route('lk')}}">
+            @if(isset($current_account['address.photo']))
+                <img src="/imagecache/house/{{$current_account['address.photo']}}" class="img-fluid">
+            @else
+                <img src="/public/img/ekb.jpg" class="img-fluid">
+            @endif
+        </a>
         <div class="object-selector">
             @if(isset($accounts) && !empty($accounts))
                 @if($accounts->count()>1)
@@ -59,13 +61,15 @@
     <div class="mobile-slidebar d-flex flex-column justify-content-between mt-4">
         <div class="row">
             <div class="col-4">
-                @if(isset($current_account['address.photo']))
-                    <img src="/imagecache/house/{{$current_account['address.photo']}}" class="img-fluid">
-                @else
-                    <img src="/public/img/ekb.jpg" class="img-fluid">
-                @endif
+                <a class="d-flex flex-column justify-content-between" href="{{route('lk')}}">
+                    @if(isset($current_account['address.photo']))
+                        <img src="/imagecache/house/{{$current_account['address.photo']}}" class="img-fluid">
+                    @else
+                        <img src="/public/img/ekb.jpg" class="img-fluid">
+                    @endif
+                </a>
             </div>
-            <div class="col-8 pt-1">
+            <div class="col-8 pt-1 pl-0">
                 @if(isset($accounts) && !empty($accounts))
                     @if($accounts->count()>1)
                         <div class="dropdown change-account mt-2 w-100">

@@ -21,15 +21,17 @@
     <div class="container-input mb-4 p-3">
         <div class="row">
             <div class="col-lg-12">
-                <h3 class="blue float-left">{{__('Accepted meter values')}} </h3>
-                <a class="btn btn-outline-dark btn-sm float-right" href="/utilities#accepted">подробнее</a>
+                <h3 class="blue float-none float-lg-left">{{__('Accepted meter values')}} </h3>
+                <a class="btn btn-outline-dark btn-sm float-left float-lg-right mt-3 mt-lg-0" href="/utilities#accepted">{{__('More')}}</a>
             </div>
         </div>
         <hr>
         @if($devices->total()>0)
         <div class="row">
             <div class="col-12">
-                <canvas id="myChart" class="w-100" style="position:relative;"></canvas>
+                <div style="height: 400px !important;">
+                    <canvas id="myChart" class="mt-5 w-100"  height="400"></canvas>
+                </div>
             </div>
             <div class="col-12 pt-4 text-center">
                 <small class="text-muted">{{__('Press color block for on/off graph line')}}</small>

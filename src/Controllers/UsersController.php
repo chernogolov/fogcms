@@ -106,14 +106,16 @@ class UsersController extends PanelController
             if (isset($post_data['user']))
             {
                 if($post_data['user']['password'] != '' && $post_data['user']['password_confirmation'] !='')
+                {
                     $this->validate($request, ['user.name' => 'min:3|required|string|max:255','user.description' => 'max:190','user.password' => 'required|string|min:4|confirmed']);
+                    $post_data['user']['password'] != '' ? $update['password'] = bcrypt($post_data['user']['password']) : null;
+                }
                 else
                     $this->validate($request, ['user.name' => 'min:3|required|string|max:255','user.description' => 'max:190',]);
 
                 $update['name'] = $post_data['user']['name'];
                 $update['phone'] = $post_data['user']['phone'];
                 $update['description'] = $post_data['user']['description'];
-                $post_data['user']['password'] != '' ? $update['password'] = bcrypt($post_data['user']['password']) : null;
                 User::where('id', '=', $id)->update($update);
                 $this->title = __('Saved');
                 $post_data['user']['password'] != '' ? $this->title .= ', ' . __('Password changed') : null;

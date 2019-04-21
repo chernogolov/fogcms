@@ -59,12 +59,12 @@ Route::get('/documents', 'Chernogolov\Fogcms\Controllers\Lk\SupportController@do
 //END LK
 
 //REGISTERS
-Route::get('/panel', 'Chernogolov\Fogcms\Controllers\RecordsController@index')->name('regs')->middleware('web');
-Route::match(['get', 'post'], '/panel/trash', 'Chernogolov\Fogcms\Controllers\RecordsController@trash')->name('trash')->middleware('web');
-Route::match(['get', 'post'], '/panel/new/{id}', 'Chernogolov\Fogcms\Controllers\RecordsController@create')->name('create_record')->where('id', '[0-9]+')->middleware('web');
-Route::match(['get', 'post'], '/panel/{id}/{rid}', 'Chernogolov\Fogcms\Controllers\RecordsController@view')->name('view_record')->where(['id' => '[0-9]+', 'rid' => '[0-9]+'])->middleware('web');
-Route::match(['get', 'post'], '/panel/edit/{id}/{rid}', 'Chernogolov\Fogcms\Controllers\RecordsController@edit')->name('edit_record')->where(['id' => '[0-9]+', 'rid' => '[0-9]+'])->middleware('web');
-Route::match(['get', 'post'], '/panel/{id}/', 'Chernogolov\Fogcms\Controllers\RecordsController@records')->name('reg_records')->where('id', '[0-9]+')->middleware('web');
+Route::get('/panel', 'Chernogolov\Fogcms\Controllers\RecordsController@index')->name('regs')->middleware('web')->middleware('can:view-regs');
+Route::match(['get', 'post'], '/panel/trash', 'Chernogolov\Fogcms\Controllers\RecordsController@trash')->name('trash')->middleware('web')->middleware('can:view-regs');
+Route::match(['get', 'post'], '/panel/new/{id}', 'Chernogolov\Fogcms\Controllers\RecordsController@create')->name('create_record')->where('id', '[0-9]+')->middleware('web')->middleware('can:view-regs');
+Route::match(['get', 'post'], '/panel/{id}/{rid}', 'Chernogolov\Fogcms\Controllers\RecordsController@view')->name('view_record')->where(['id' => '[0-9]+', 'rid' => '[0-9]+'])->middleware('web')->middleware('can:view-regs');
+Route::match(['get', 'post'], '/panel/edit/{id}/{rid}', 'Chernogolov\Fogcms\Controllers\RecordsController@edit')->name('edit_record')->where(['id' => '[0-9]+', 'rid' => '[0-9]+'])->middleware('web')->middleware('can:view-regs');
+Route::match(['get', 'post'], '/panel/{id}/', 'Chernogolov\Fogcms\Controllers\RecordsController@records')->name('reg_records')->where('id', '[0-9]+')->middleware('web')->middleware('can:view-regs');
 
 //appeals statuses
 Route::get('/panel/status/{rid}', 'Chernogolov\Fogcms\Controllers\RecordsController@change_status')->name('change_status')->where(['rid' => '[0-9]+'])->middleware('web');
@@ -73,41 +73,41 @@ Route::match(['get', 'post'], '/panel/rate/{rid}', 'Chernogolov\Fogcms\Controlle
 
 
 //export & templates
-Route::get('/document/{id}/{rid}', 'Chernogolov\Fogcms\Controllers\RecordsController@document')->name('document')->where(['id' => '[0-9]+', 'rid' => '[0-9]+'])->middleware('web');
-Route::match(['get', 'post'], '/panel/export/{id}', 'Chernogolov\Fogcms\Controllers\RecordsController@export')->name('export')->where('id', '[0-9]+')->middleware('web');
+Route::get('/document/{id}/{rid}', 'Chernogolov\Fogcms\Controllers\RecordsController@document')->name('document')->where(['id' => '[0-9]+', 'rid' => '[0-9]+'])->middleware('web')->middleware('can:view-regs');
+Route::match(['get', 'post'], '/panel/export/{id}', 'Chernogolov\Fogcms\Controllers\RecordsController@export')->name('export')->where('id', '[0-9]+')->middleware('web')->middleware('can:view-regs');
 //END REGISTERS
 
 //COMMENTS
-Route::get('/panel/comments/{rid}', 'Chernogolov\Fogcms\Controllers\CommentsController@getComments')->name('comments')->where('rid', '[0-9]+')->middleware('web');
-Route::match(['get', 'post'], '/panel/comments/edit/{rid}', 'Chernogolov\Fogcms\Controllers\CommentsController@editComments')->name('editcomments')->where('rid', '[0-9]+')->middleware('web');
-Route::match(['get', 'post'], '/panel/comments/delete/{rid}', 'Chernogolov\Fogcms\Controllers\CommentsController@deleteComments')->name('deletecomments')->where('rid', '[0-9]+')->middleware('web');
+Route::get('/panel/comments/{rid}', 'Chernogolov\Fogcms\Controllers\CommentsController@getComments')->name('comments')->where('rid', '[0-9]+')->middleware('web')->middleware('can:view-regs');
+Route::match(['get', 'post'], '/panel/comments/edit/{rid}', 'Chernogolov\Fogcms\Controllers\CommentsController@editComments')->name('editcomments')->where('rid', '[0-9]+')->middleware('web')->middleware('can:view-regs');
+Route::match(['get', 'post'], '/panel/comments/delete/{rid}', 'Chernogolov\Fogcms\Controllers\CommentsController@deleteComments')->name('deletecomments')->where('rid', '[0-9]+')->middleware('web')->middleware('can:view-regs');
 //END COMMENTS
 
 //OPTIONS
-Route::match(['get', 'post'], '/options/account', 'Chernogolov\Fogcms\Controllers\OptionsController@account')->name('account')->middleware('web');
-Route::match(['get', 'post'], '/options/notify', 'Chernogolov\Fogcms\Controllers\OptionsController@notify_regs')->name('notify_regs')->middleware('web');
-Route::match(['get', 'post'], '/options/{group?}', 'Chernogolov\Fogcms\Controllers\OptionsController@getdata')->name('options')->middleware('web');
+Route::match(['get', 'post'], '/options/account', 'Chernogolov\Fogcms\Controllers\OptionsController@account')->name('account')->middleware('web')->middleware('can:view-regs');
+Route::match(['get', 'post'], '/options/notify', 'Chernogolov\Fogcms\Controllers\OptionsController@notify_regs')->name('notify_regs')->middleware('web')->middleware('can:view-regs');
+Route::match(['get', 'post'], '/options/{group?}', 'Chernogolov\Fogcms\Controllers\OptionsController@getdata')->name('options')->middleware('web')->middleware('can:view-regs');
 //END OPTIONS
 
 //SETTINGS
-Route::get('/settings', 'Chernogolov\Fogcms\Controllers\SettingsController@index')->name('settings')->middleware('web');
-Route::match(['get', 'post'], '/settings/reglist/', 'Chernogolov\Fogcms\Controllers\Settings\RegsController@reglist')->name('reglist')->middleware('web');
-Route::match(['get', 'post'], '/settings/reglist/new', 'Chernogolov\Fogcms\Controllers\Settings\RegsController@create')->name('newreg')->middleware('web');
-Route::match(['get', 'post'], '/settings/reglist/{id}', 'Chernogolov\Fogcms\Controllers\Settings\RegsController@edit')->name('regedit')->middleware('web');
-Route::match(['get', 'post'], '/settings/attrs/', 'Chernogolov\Fogcms\Controllers\Settings\AttrController@attrlist')->name('attrlist')->middleware('web');
-Route::match(['get', 'post'], '/settings/attrs/new', 'Chernogolov\Fogcms\Controllers\Settings\AttrController@create')->name('newattr')->middleware('web');
-Route::match(['get', 'post'], '/settings/attrs/{id?}', 'Chernogolov\Fogcms\Controllers\Settings\AttrController@edit')->name('editattr')->middleware('web');
-Route::match(['get', 'post'], '/settings/lists', 'Chernogolov\Fogcms\Controllers\Settings\ListsController@lists')->name('lists')->middleware('web');
-Route::match(['get', 'post'], '/settings/list/{id}', 'Chernogolov\Fogcms\Controllers\Settings\ListsController@edit')->name('editlist')->middleware('web');
-Route::match(['get', 'post'], '/settings/forms/{id}', 'Chernogolov\Fogcms\Controllers\Settings\FormsController@edit')->name('editform')->middleware('web');
+Route::get('/settings', 'Chernogolov\Fogcms\Controllers\SettingsController@index')->name('settings')->middleware('web')->middleware('can:view-admin');
+Route::match(['get', 'post'], '/settings/reglist/', 'Chernogolov\Fogcms\Controllers\Settings\RegsController@reglist')->name('reglist')->middleware('web')->middleware('can:view-regs');
+Route::match(['get', 'post'], '/settings/reglist/new', 'Chernogolov\Fogcms\Controllers\Settings\RegsController@create')->name('newreg')->middleware('web')->middleware('can:view-regs');
+Route::match(['get', 'post'], '/settings/reglist/{id}', 'Chernogolov\Fogcms\Controllers\Settings\RegsController@edit')->name('regedit')->middleware('web')->middleware('can:view-regs');
+Route::match(['get', 'post'], '/settings/attrs/', 'Chernogolov\Fogcms\Controllers\Settings\AttrController@attrlist')->name('attrlist')->middleware('web')->middleware('can:view-regs');
+Route::match(['get', 'post'], '/settings/attrs/new', 'Chernogolov\Fogcms\Controllers\Settings\AttrController@create')->name('newattr')->middleware('web')->middleware('can:view-regs');
+Route::match(['get', 'post'], '/settings/attrs/{id?}', 'Chernogolov\Fogcms\Controllers\Settings\AttrController@edit')->name('editattr')->middleware('web')->middleware('can:view-regs');
+Route::match(['get', 'post'], '/settings/lists', 'Chernogolov\Fogcms\Controllers\Settings\ListsController@lists')->name('lists')->middleware('web')->middleware('can:view-regs');
+Route::match(['get', 'post'], '/settings/list/{id}', 'Chernogolov\Fogcms\Controllers\Settings\ListsController@edit')->name('editlist')->middleware('web')->middleware('can:view-regs');
+Route::match(['get', 'post'], '/settings/forms/{id}', 'Chernogolov\Fogcms\Controllers\Settings\FormsController@edit')->name('editform')->middleware('web')->middleware('can:view-regs');
 //END SETTINGS
 
 //USERS
-Route::match(['get', 'post'],'/users', 'Chernogolov\Fogcms\Controllers\UsersController@users')->name('users')->middleware('web');
-Route::match(['get', 'post'],'/users/regs', 'Chernogolov\Fogcms\Controllers\UsersController@regs')->name('users_regs')->middleware('web');
-Route::match(['get', 'post'],'/blocking', 'Chernogolov\Fogcms\Controllers\UsersController@blocking')->name('blocking')->middleware('web');
-Route::match(['get', 'post'],'/users/new', 'Chernogolov\Fogcms\Controllers\UsersController@create')->name('new_user')->middleware('web');
-Route::match(['get', 'post'],'/users/edit/{id}', 'Chernogolov\Fogcms\Controllers\UsersController@edit')->name('edit_user')->middleware('web');
+Route::match(['get', 'post'],'/users', 'Chernogolov\Fogcms\Controllers\UsersController@users')->name('users')->middleware('web')->middleware('can:view-regs');
+Route::match(['get', 'post'],'/users/regs', 'Chernogolov\Fogcms\Controllers\UsersController@regs')->name('users_regs')->middleware('web')->middleware('can:view-regs');
+Route::match(['get', 'post'],'/blocking', 'Chernogolov\Fogcms\Controllers\UsersController@blocking')->name('blocking')->middleware('web')->middleware('can:view-regs');
+Route::match(['get', 'post'],'/users/new', 'Chernogolov\Fogcms\Controllers\UsersController@create')->name('new_user')->middleware('web')->middleware('can:view-regs');
+Route::match(['get', 'post'],'/users/edit/{id}', 'Chernogolov\Fogcms\Controllers\UsersController@edit')->name('edit_user')->middleware('web')->middleware('can:view-regs');
 //END USERS
 
 //IMAGES

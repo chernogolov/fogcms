@@ -34,12 +34,17 @@ class FinanceController extends LkController
         $this->data['views'][] = $this->getCharges($request, true);
         $this->data['views'][] = $this->getPayments($request, true);
 
+        $this->title = __('Finance');
+
         return $this->index();
     }
 
     public function getCharges(Request $request, $view = false)
     {
-        $this->title = __('Charges');
+        $this->getAccounts();
+
+        $this->title = __('Utilites');
+
         if($request->ajax() || $view)
             return view('fogcms::lk/pages/charges', []);
         else
