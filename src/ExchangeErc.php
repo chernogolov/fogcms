@@ -102,31 +102,55 @@ class ExchangeErc extends Model
             ]
         ];
         $devices = Records::getRecords(Config::get('fogcms.devices_reg_id'), $params)->keyBy('MeteringDeviceNumber');
-        foreach($result->GetMeteringDevicesResult->MeteringDevice as $item)
+        if(isset($result->GetMeteringDevicesResult->MeteringDevice))
         {
-            if($item->CloseDate > Carbon::now()->toIso8601String())
+            if(isset($result->GetMeteringDevicesResult->MeteringDevice->CloseDate))
             {
-                $item->account_number = $account->account_number;
-                if(count($devices)>0)
+                $item = $result->GetMeteringDevicesResult->MeteringDevice;
+                if($item->CloseDate > Carbon::now()->toIso8601String())
                 {
-                    if($devices->has($item->MeteringDeviceNumber))
+                    $item->account_number = $account->account_number;
+                    if(count($devices)>0)
                     {
-                        $item->id = $devices->get($item->MeteringDeviceNumber)->id;
-                        $devices->forget($item->MeteringDeviceNumber);
+                        if($devices->has($item->MeteringDeviceNumber))
+                        {
+                            $item->id = $devices->get($item->MeteringDeviceNumber)->id;
+                            $devices->forget($item->MeteringDeviceNumber);
+                        }
+                    }
+
+                    $res[] = $item;
+                }
+            }
+            else
+            {
+                foreach($result->GetMeteringDevicesResult->MeteringDevice as $item)
+                {
+                    if($item->CloseDate > Carbon::now()->toIso8601String())
+                    {
+                        $item->account_number = $account->account_number;
+                        if(count($devices)>0)
+                        {
+                            if($devices->has($item->MeteringDeviceNumber))
+                            {
+                                $item->id = $devices->get($item->MeteringDeviceNumber)->id;
+                                $devices->forget($item->MeteringDeviceNumber);
+                            }
+                        }
+
+                        $res[] = $item;
                     }
                 }
-
-                $res[] = $item;
             }
-        }
 
-        foreach ($devices as $delete) {
-            Records::deleteRecord($delete->id,null,true);
-        }
+            foreach ($devices as $delete) {
+                Records::deleteRecord($delete->id,null,true);
+            }
 
-        Records::$import = true;
-        Records::updateReg(Config::get('fogcms.devices_reg_id'), $res);
-        //get devices data
+            Records::$import = true;
+            Records::updateReg(Config::get('fogcms.devices_reg_id'), $res);
+            //get devices data
+        }
     }
 
     public static function getMeterValues($account)
@@ -198,7 +222,7 @@ class ExchangeErc extends Model
 
 //        $meteringDevicesValues = MeteringDevicesValues::where('account_number', $account->account_number)->first();
 //        if(!$meteringDevicesValues)
-            $period = Carbon::now()->startOfYear()->toIso8601String();
+        $period = Carbon::now()->startOfYear()->toIso8601String();
 //        else
 //            $period = Carbon::now()->startOfMonth()->toIso8601String();
 
