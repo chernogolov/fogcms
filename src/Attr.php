@@ -136,14 +136,15 @@ class Attr extends Model
     public static function getRegAttr($attr_id, $reg_id = null)
     {
         $where[] = ['attrs.id', '=', $attr_id];
+
         if($reg_id)
             $where[] = ['attrs_regs.regs_id', '=', $reg_id];
+
         $data = DB::table('attrs')
             ->join('attrs_regs', 'attrs.id', '=', 'attrs_regs.attr_id')
             ->where($where)
             ->select(['attrs_regs.*', 'attrs.type', 'attrs.name', 'attrs.title', 'attrs.modificator'])
             ->first();
-
         return $data;
     }
 
@@ -234,10 +235,10 @@ class Attr extends Model
         return $attrs;
     }
 
-    public static function saveAttr($data, $attr_data = null)
+    public static function saveAttr($data, $attr_data = null, $reg_id = null)
     {
         if(!$attr_data)
-            $attr_data = Attr::getRegAttr($data['attr_id']);
+            $attr_data = Attr::getRegAttr($data['attr_id'], $reg_id);
 
         $function_name = 'set'.ucfirst($attr_data->type).'Value';
 
@@ -251,6 +252,7 @@ class Attr extends Model
         }
 
         $r = Self::$function_name($data, $attr_data);
+
         if($attr_data->is_required == 1)
         {
             if($r === false)

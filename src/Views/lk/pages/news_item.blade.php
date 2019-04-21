@@ -10,9 +10,9 @@
                          </div>
                      @endif
                      <h1 class="blue mb-3">{{$item['title']}}</h1>
-                     <small>{{$item['Date']}}</small>
+                     @isset($item['Date'])<small>{{$item['Date']}}</small>@endisset
                      <div class="mt-3">
-                         {{$item['entry']}}
+                         @isset($item['entry']){{$item['entry']}}@endisset
                      </div>
                          <div class="clearfix"></div>
                      <div class="mt-3">

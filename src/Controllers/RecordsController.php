@@ -422,7 +422,7 @@ class RecordsController extends PanelController
 
 
             $request->validate($validate_attr);
-            Records::saveRecord(null, $post_data['record'], $post_data['attr']);
+            Records::saveRecord($id, $post_data['record'], $post_data['attr']);
 
             //go to list function
             if(isset($post_data['to_list']))

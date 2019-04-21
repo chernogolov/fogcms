@@ -58,9 +58,7 @@ class Records extends Model
         elseif($attr->type == 'select')
         {
             foreach($attr->values as $val)
-            {
-                $data[$name] = $attr->data[$val->value]->value;
-            }
+                isset($attr->data[$val->value]) ? $data[$name] = $attr->data[$val->value]->value : null;
         }
         elseif($attr->type == 'image')
         {
@@ -375,7 +373,7 @@ class Records extends Model
         return $record_id;
     }
 
-    public static function saveRecord($regs, $data, $attrs)
+    public static function saveRecord($regs, $data, $attrs, $reg_id = null)
     {
         Attr::$import = Self::$import;
 
@@ -408,13 +406,29 @@ class Records extends Model
 //            if(!in_array($reg, $new_rs))
 //                $id = DB::table('records_regs')->insertGetId(array('records_id' => $record_id, 'regs_id' => $reg));
 //        }
-        //save attributes ----------------------
-        foreach($attrs as $attr)
+
+        if(!empty($regs))
         {
-            $attr['record_id'] = $record_id;
-            if(Attr::saveAttr($attr) == false)
-                return false;
+            foreach($regs as $reg)
+            {
+                foreach($attrs as $attr)
+                {
+                    $attr['record_id'] = $record_id;
+                    if(Attr::saveAttr($attr, null, $reg) == false)
+                        return false;
+                }
+            }
         }
+        else
+            foreach($attrs as $attr)
+            {
+                $attr['record_id'] = $record_id;
+                if(Attr::saveAttr($attr) == false)
+                    return false;
+            }
+
+        //save attributes ----------------------
+
 
     }
 

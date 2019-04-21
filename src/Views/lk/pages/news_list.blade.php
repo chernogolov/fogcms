@@ -10,7 +10,7 @@
                          </a>
                           <div class="media-body">
                             <h5 class="mt-0 mb-2 float-lg-left"><strong><a href="{{route('news-item', ['id' => $item->id])}}">{{$item->title}}</a></strong></h5>
-                            <small class="float-lg-right">{{date('d-m-Y', $item->Date)}}</small><br>
+                            @if($item->Date)<small class="float-lg-right">{{date('d-m-Y', $item->Date)}}</small>@endif<br>
                             <div class="mt-2 d-none d-sm-block" style="height: 31px;overflow: hidden">
                                 {!!str_limit(strip_tags($item->entry), 160)!!}
                             </div>

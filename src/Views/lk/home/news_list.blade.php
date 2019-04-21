@@ -1,3 +1,4 @@
+@if(!empty($news))
 <div class="col-12">
     <div class="container-input left-blue-line pt-3 pl-3 pr-3 pb-0 mb-4 home-news">
         <div class="row">
@@ -19,3 +20,4 @@
         </div>
     </div>
 </div>
+@endif

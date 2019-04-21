@@ -450,5 +450,4 @@ class LkController extends PanelController
 
         return view('fogcms::lk', $data);
     }
-
 }

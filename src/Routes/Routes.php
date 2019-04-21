@@ -141,3 +141,4 @@ Route::get('/clear', function() {
     return "Кэш очищен.";
 });
 
+Route::match(['get'], '/privacy_policy', 'Chernogolov\Fogcms\Controllers\StaticController@privacy_policy')->name('privacy_policy')->middleware('web');

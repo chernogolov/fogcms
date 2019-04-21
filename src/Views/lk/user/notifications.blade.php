@@ -30,7 +30,7 @@
             {{ csrf_field() }}
                 @foreach($nodes as $node)
                     <div class="row">
-                        <div class="col-3">
+                        <div class="col-6">
                             {{__('Setup')}}
                         </div>
                         <div class="col-3 text-center d-none d-lg-block">
@@ -39,13 +39,13 @@
                         <div class="col-3 text-center d-none d-lg-block">
                             {{__('Email')}}
                         </div>
-                        <div class="col-3 text-center d-none d-lg-block">
-                            {{__('Push')}}
-                        </div>
+                        {{--<div class="col-3 text-center d-none d-lg-block">--}}
+                            {{--{{__('Push')}}--}}
+                        {{--</div>--}}
                     </div>
                     <hr>
                     <div class="row">
-                        <div class="col-12 col-lg-3 pl-lg-4 mb-4 mb-lg-0">
+                        <div class="col-12 col-lg-6 pl-lg-4 mb-4 mb-lg-0">
                             <label for="send_{{ $node->id }}" ><h3 class="mt-2">{{$node->name}}</h3></label>
                         </div>
                         <div class="col-12 col-lg-3 text-lg-center">
@@ -68,19 +68,19 @@
                                 <span class="switch-label" data-on="Да" data-off="Нет"></span><span class="switch-handle"></span>
                             </label>
                         </div>
-                        <div class="col-12 col-lg-3 text-lg-center">
-                            <span class="d-inline-block d-lg-none">{{__('Push')}}</span>
-                            <label class="switch switch-left-right float-right float-lg-none">
-                                @if(isset($access[$node->id]) && $access[$node->id]->push == 1)
-                                    <input type="hidden" name="regs[{{ $node->id }}][push]" value="1" id="h_push_{{ $node->id }}">
-                                    <input class="switch-input checkbox set-access" type="checkbox" data-id="push_{{ $node->id }}" checked id="push_{{ $node->id }}">
-                                @else
-                                    <input type="hidden" name="regs[{{ $node->id }}][push]" value="0" id="h_push_{{ $node->id }}">
-                                    <input class="switch-input checkbox set-access" type="checkbox" data-id="push_{{ $node->id }}" id="push_{{ $node->id }}">
-                                @endif
-                                <span class="switch-label" data-on="Да" data-off="Нет"></span><span class="switch-handle"></span>
-                            </label>
-                        </div>
+                        {{--<div class="col-12 col-lg-3 text-lg-center">--}}
+                            {{--<span class="d-inline-block d-lg-none">{{__('Push')}}</span>--}}
+                            {{--<label class="switch switch-left-right float-right float-lg-none">--}}
+                                {{--@if(isset($access[$node->id]) && $access[$node->id]->push == 1)--}}
+                                    {{--<input type="hidden" name="regs[{{ $node->id }}][push]" value="1" id="h_push_{{ $node->id }}">--}}
+                                    {{--<input class="switch-input checkbox set-access" type="checkbox" data-id="push_{{ $node->id }}" checked id="push_{{ $node->id }}">--}}
+                                {{--@else--}}
+                                    {{--<input type="hidden" name="regs[{{ $node->id }}][push]" value="0" id="h_push_{{ $node->id }}">--}}
+                                    {{--<input class="switch-input checkbox set-access" type="checkbox" data-id="push_{{ $node->id }}" id="push_{{ $node->id }}">--}}
+                                {{--@endif--}}
+                                {{--<span class="switch-label" data-on="Да" data-off="Нет"></span><span class="switch-handle"></span>--}}
+                            {{--</label>--}}
+                        {{--</div>--}}
                     </div>
                 @endforeach
                 <hr class="mb-4">

@@ -13,7 +13,7 @@
                               <div class="card">
                                 <div class="card-header" id="heading{{$it->id}}">
                                   <h5 class="mb-0">
-                                    <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse{{$it->id}}" aria-expanded="true" aria-controls="collapse{{$it->id}}">
+                                    <button class="btn btn-link text-left" type="button" data-toggle="collapse" data-target="#collapse{{$it->id}}" aria-expanded="true" aria-controls="collapse{{$it->id}}">
                                       {!!$it->question!!}
                                     </button>
                                   </h5>
