@@ -50,7 +50,7 @@
             </li>
         </ul>
         <div class="logout mt-5">
-            <a onclick="event.preventDefault(); document.getElementById('logout-form').submit();" href="{{ route('logout') }}" class="d-flex justify-content-between"><span>Выход из системы</span><img src="/vendor/chernogolov/fogcms/public/img/exit_btn.png" alt="exit"></a>
+            <a onclick="event.preventDefault(); document.getElementById('logout-form').submit();" href="{{ route('logout') }}" class="d-flex justify-content-between"><span>Выход из системы</span><img src="{{ asset('/vendor/fogcms/img/exit_btn.png') }}" alt="exit"></a>
             <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                 @csrf
             </form>
