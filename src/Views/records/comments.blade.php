@@ -119,7 +119,7 @@
                 processData: false, // Отключаем, так как передаем файл
                 beforeSend: function() {
                     $('#inputImage').prop('disabled',true);
-                    $('.image-preview').append('<img src="/vendor/chernogolov/fogcms/public/img/load_min.gif" id="comment_loader">');
+                    $('.image-preview').append('<img src="/vendor/fogcms/img/load_min.gif" id="comment_loader">');
                 },
                 success:function(data){
                     $('#comment_loader').remove();

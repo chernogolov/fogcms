@@ -1,5 +1,5 @@
 @push('scripts')
-        <script src="{{ asset('/vendor/chernogolov/fogcms/public/js/vendor/multiple-select/multiple-select.js') }}"></script>
+        <script src="{{ asset('/vendor/fogcms/js/vendor/multiple-select/multiple-select.js') }}"></script>
 @endpush
 
 @extends('fogcms::layouts.fog')

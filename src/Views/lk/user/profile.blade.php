@@ -80,10 +80,10 @@
     </div>
 </div>
 @push('styles')
-    <link href="{{ asset('/vendor/chernogolov/fogcms/public/css/vendor/imgareaselect/imgareaselect-default.css') }}" rel="stylesheet" >
+    <link href="{{ asset('/vendor/fogcms/css/vendor/imgareaselect/imgareaselect-default.css') }}" rel="stylesheet" >
 @endpush
 @push('scripts')
-        <script src="{{ asset('/vendor/chernogolov/fogcms/public/js/vendor/jquery.imgareaselect.pack.js') }}"></script>
+        <script src="{{ asset('/vendor/fogcms/js/vendor/jquery.imgareaselect.pack.js') }}"></script>
         <script type="text/javascript">
         $(document).ready(function () {
 

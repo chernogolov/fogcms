@@ -1,9 +1,9 @@
 @push('scripts')
-        <script src="{{asset('/vendor/chernogolov/fogcms/public/js/vendor/jstree/jstree.js')}}"></script>
-        <script src="{{asset('/vendor/chernogolov/fogcms/public/js/vendor/summernote/summernote-bs4.min.js')}}"></script>
+        <script src="{{asset('/vendor/fogcms/js/vendor/jstree/jstree.js')}}"></script>
+        <script src="{{asset('/vendor/fogcms/js/vendor/summernote/summernote-bs4.min.js')}}"></script>
 @endpush
 @push('styles')
-        <link href="{{ asset('/vendor/chernogolov/fogcms/public/js/vendor/summernote/summernote-bs4.css') }}" rel="stylesheet">
+        <link href="{{ asset('/vendor/fogcms/js/vendor/summernote/summernote-bs4.css') }}" rel="stylesheet">
 @endpush
 <div class="row">
     <div id="jstree"></div>
@@ -75,7 +75,7 @@
                             $('#'+destination).html(data);
                         },
                         beforeSend: function() {
-                            $('#'+destination+' #head-image').html('<img src="/vendor/chernogolov/fogcms/public/img/load_min.gif" style="height: 22px;">&nbsp;&nbsp;Загрузка...');
+                            $('#'+destination+' #head-image').html('<img src="/vendor/fogcms/img/load_min.gif" style="height: 22px;">&nbsp;&nbsp;Загрузка...');
                         },
                         error: function (msg) {
                             $('#'+destination).html(msg);
@@ -92,7 +92,7 @@
                             'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
                         },
                         beforeSend: function() {
-                            $('#'+destination+' #head-image').html('<img src="/vendor/chernogolov/fogcms/public/img/load_min.gif" style="height: 22px;">&nbsp;&nbsp;Загрузка...');
+                            $('#'+destination+' #head-image').html('<img src="/vendor/fogcms/img/load_min.gif" style="height: 22px;">&nbsp;&nbsp;Загрузка...');
                         },
                         success: function (data) {
                             $('#'+destination).html(data);
