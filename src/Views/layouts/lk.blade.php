@@ -35,10 +35,10 @@
 
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet" >
-    <link href="{{ asset('/vendor/chernogolov/fogcms/public/css/vendor/reset.css') }}" rel="stylesheet" >
-    <link href="{{ asset('/vendor/chernogolov/fogcms/public/css/vendor/fonts.css') }}" rel="stylesheet" >
+    <link href="{{ asset('/vendor/fogcms/css/vendor/reset.css') }}" rel="stylesheet" >
+    <link href="{{ asset('/vendor/fogcms/css/vendor/fonts.css') }}" rel="stylesheet" >
     @stack('styles')
-    <link href="{{ asset('/vendor/chernogolov/fogcms/public/css/lk.css') }}" rel="stylesheet" >
+    <link href="{{ asset('/vendor/fogcms/css/lk.css') }}" rel="stylesheet" >
 
 
 </head>
@@ -74,14 +74,14 @@
 						<div class="collapse navbar-collapse col-12 col-sm-6 col-md-5" id="navbarSupportedContent">
 						   	<p class="address-text my-auto d-none d-lg-inline-block">
                                 <a href="{{route('news')}}" class="header-link">
-                                    <span class="mdi mdi-newspaper mdi-light mdi-24px float-left"></span><small class="float-left d-none d-lg-block">{{__('News')}}</small>
+                                    <span class="mdi mdi-newspaper mdi-light mdi-24px float-left"></span><small class="float-left d-none d-lg-block">Новости</small>
                                 </a>
                                 <a href="{{route('messages')}}" class="header-link">
                                     <span class="mdi mdi-email mdi-light mdi-24px float-left">@if(count($user->unreadNotifications)>0)<sub>{{count($user->unreadNotifications)}}</sub>@endif</span>
-                                    <small class="float-left d-none d-lg-block">{{__('Messages')}}</small>
+                                    <small class="float-left d-none d-lg-block">Сообщения</small>
                                 </a>
                                 <a href="{{route('contacts')}}" class="header-link">
-                                    <span class="mdi mdi-contacts mdi-light mdi-24px float-left"></span><small class="float-left d-none d-lg-block">{{__('Contacts')}}</small>
+                                    <span class="mdi mdi-contacts mdi-light mdi-24px float-left"></span><small class="float-left d-none d-lg-block">Контакты</small>
                                 </a>
 						   	</p>
 						   	<div class="slidebar d-lg-none">
@@ -100,15 +100,6 @@
                                               </li>
                                               <li class="list-group-item active">
                                                 <a href="{{route('finance')}}">{{__('Finance')}}</a>
-                                              </li>
-                                              <li class="list-group-item active">
-                                                    <a href="{{route('news')}}">{{__('News')}}</a>
-                                              </li>
-                                              <li class="list-group-item active">
-                                                    <a href="{{route('messages')}}">{{__('Messages')}} @if(count($user->unreadNotifications)>0)<span class="badge badge-pill">{{count($user->unreadNotifications)}}</span>@endif</a>
-                                              </li>
-                                              <li class="list-group-item active">
-                                                    <a href="{{route('contacts')}}">{{__('Contacts')}}</a>
                                               </li>
                                             </ul>
                                             <div class="logout mt-5">
@@ -133,7 +124,6 @@
                                 <div class="dropdown-menu p-4 text-muted w-100">
                                     <a class="dropdown-item" href="{{route('lk-profile')}}">{{__('Profile settings')}}</a>
                                     <a class="dropdown-item" href="{{route('lk-accounts')}}">{{__('My accounts')}}</a>
-                                    <a class="dropdown-item" href="{{route('lk-notifications')}}">{{__('Notifications')}}</a>
                                     <a class="dropdown-item" href="{{route('lk-password')}}">{{__('Password')}}</a>
                                     <div class="dropdown-divider"></div>
                                     <a onclick="event.preventDefault(); document.getElementById('logout-form').submit();" href="{{ route('logout') }}" class="dropdown-item"><span>{{__('Exit')}}</span></a>
@@ -154,9 +144,10 @@
 		<div class="wrapper-footer">
 			<div class="container">
 				<div class="row justify-content-between align-items-center">
-                    <div class="col-12 col-md-7 col-lg-7 pr-0 d-block d-md-flex text-md-left text-center"><img class="my-auto" src="{{env('APP_FOOTER_LOGO', '')}}" alt="logo">
-                        <p class="m-auto">© <?=date('Y')?>&nbsp;{{__('All rights reserved')}}</p><p class="m-auto">{{__('Version')}}&nbsp;:&nbsp;{{env('APP_VERSION', '')}}</p></div>
-                    <div class="col-12 col-md-5 col-lg-3 text-md-right text-center"><a href="/privacy_policy" >{{__('Privacy policy')}}</a></div>
+					<div class="col-12 col-md-7 col-lg-5 pr-0 row d-block d-md-flex text-md-left text-center">
+					<img class="my-auto" src="{{env('APP_FOOTER_LOGO', '')}}" alt="logo" style="margin-left: 15px;">
+					<p class="m-auto">© <?=date('Y')?>&nbsp;{{__('All rights reserved')}}</p></div>
+					<div class="col-12 col-md-5 col-lg-3 text-md-right text-center"><a href="#" >{{__('Privacy policy')}}</a></div>
 				</div>
 			</div>
 		</div>
@@ -166,12 +157,12 @@
 </body>
 </html>
 
-    <link href="{{ asset('/vendor/chernogolov/fogcms/public/css/vendor/magnific-popup.css') }}" rel="stylesheet">
-    <link href="{{ asset('/vendor/chernogolov/fogcms/public/css/vendor/slick.css') }}" rel="stylesheet" >
-    <link href="{{ asset('/vendor/chernogolov/fogcms/public/css/vendor/slick-theme.css') }}" rel="stylesheet" >
+    <link href="{{ asset('/vendor/fogcms/css/vendor/magnific-popup.css') }}" rel="stylesheet">
+    <link href="{{ asset('/vendor/fogcms/css/vendor/slick.css') }}" rel="stylesheet" >
+    <link href="{{ asset('/vendor/fogcms/css/vendor/slick-theme.css') }}" rel="stylesheet" >
     <link href="https://cdn.materialdesignicons.com/3.4.93/css/materialdesignicons.min.css" rel="stylesheet">
 
-    <script src="{{ asset('/vendor/chernogolov/fogcms/public/js/vendor/slick.js') }}"></script>
-    <script src="{{ asset('/vendor/chernogolov/fogcms/public/js/lk.js') }}"></script>
-    <script src="{{ asset('/vendor/chernogolov/fogcms/public/js/vendor/jquery.magnific-popup.min.js') }}"></script>
+    <script src="{{ asset('/vendor/fogcms/js/vendor/slick.js') }}"></script>
+    <script src="{{ asset('/vendor/fogcms/js/lk.js') }}"></script>
+    <script src="{{ asset('/vendor/fogcms/js/vendor/jquery.magnific-popup.min.js') }}"></script>
     @stack('scripts')

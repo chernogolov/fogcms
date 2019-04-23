@@ -4,13 +4,13 @@ namespace Chernogolov\Fogcms;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\URL;
 
 
 class FogcmsServiceProvider extends ServiceProvider
 {
     public function boot()
     {
-
         $this->mergeConfigFrom(__DIR__ . '/../config/fogcms.php', 'fogcms');
 
         if(is_dir(__DIR__ . '/Migrations')) {
@@ -20,6 +20,14 @@ class FogcmsServiceProvider extends ServiceProvider
         if(is_dir(__DIR__ . '/Views')) {
             $this->loadViewsFrom(__DIR__ . '/Views', 'fogcms');
         }
+
+        if(is_dir(__DIR__ . '/Translations')) {
+            $this->loadTranslationsFrom(__DIR__.'/Translations', 'fogcms');
+        }
+
+        $this->publishes([
+            __DIR__.'/Assets' => public_path('vendor/fogcms'),
+        ], 'public');
 
         Gate::define('view-admin', function ($user) {
             return in_array($user->id, [1]);

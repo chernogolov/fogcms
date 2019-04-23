@@ -19,9 +19,9 @@
 
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet" >
-    <link href="{{ asset('/vendor/chernogolov/fogcms/public/js/vendor/multiple-select/multiple-select.css') }}" rel="stylesheet">
-    <link href="{{ asset('/vendor/chernogolov/fogcms/public/css/vendor/magnific-popup.css') }}" rel="stylesheet">
-    <link href="{{ asset('/vendor/chernogolov/fogcms/public/css/fogcms.css') }}" rel="stylesheet">
+    <link href="{{ asset('/vendor/fogcms/js/vendor/multiple-select/multiple-select.css') }}" rel="stylesheet">
+    <link href="{{ asset('/vendor/fogcms/css/vendor/magnific-popup.css') }}" rel="stylesheet">
+    <link href="{{ asset('/vendor/fogcms/css/fogcms.css') }}" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/themes/default/style.min.css" />
 
 
@@ -111,7 +111,7 @@
 
     @stack('styles')
 
-    <script src="{{ asset('/vendor/chernogolov/fogcms/public/js/fogcms.js') }}"></script>
-    <script src="{{ asset('/vendor/chernogolov/fogcms/public/js/vendor/jquery.magnific-popup.min.js') }}"></script>
+    <script src="{{ asset('/vendor/fogcms/js/fogcms.js') }}"></script>
+    <script src="{{ asset('/vendor/fogcms/js/vendor/jquery.magnific-popup.min.js') }}"></script>
     @stack('scripts')
 

@@ -31,12 +31,14 @@
     <link rel="icon" type="image/x-icon" href="{{env('APP_FAVICON', '')}}">
 
 	<link href="{{ asset('css/app.css') }}" rel="stylesheet" >
+
     <link href="https://cdn.materialdesignicons.com/3.4.93/css/materialdesignicons.min.css" rel="stylesheet">
 
-    <link href="{{ asset('/vendor/chernogolov/fogcms/public/css/vendor/reset.css') }}" rel="stylesheet" >
-    <link href="{{ asset('/vendor/chernogolov/fogcms/public/css/vendor/fonts.css') }}" rel="stylesheet" >
+    <link href="{{ asset('/vendor/fogcms/css/vendor/reset.css') }}" rel="stylesheet" >
+    <link href="{{ asset('/vendor/fogcms/css/vendor/fonts.css') }}" rel="stylesheet" >
 
-	<link href="{{ asset('/vendor/chernogolov/fogcms/public/css/lk.css') }}" rel="stylesheet" >
+	<link href="{{ asset('/vendor/fogcms/css/lk.css') }}" rel="stylesheet" >
+
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet" type="text/css">
@@ -67,9 +69,9 @@
 		<div class="wrapper-footer">
 			<div class="container">
 				<div class="row justify-content-between align-items-center">
-                    <div class="col-12 col-md-7 col-lg-7 pr-0 d-block d-md-flex text-md-left text-center"><img class="my-auto" src="{{env('APP_FOOTER_LOGO', '')}}" alt="logo">
-                        <p class="m-auto">© <?=date('Y')?>&nbsp;{{__('All rights reserved')}}</p><p class="m-auto">{{__('Version')}}&nbsp;:&nbsp;{{env('APP_VERSION', '')}}</p></div>
-                    <div class="col-12 col-md-5 col-lg-3 text-md-right text-center"><a href="/privacy_policy" >{{__('Privacy policy')}}</a></div>
+					<div class="col-12 col-md-7 col-lg-5 pr-0 d-block d-md-flex text-md-left text-center"><img class="my-auto" src="{{env('APP_FOOTER_LOGO', '')}}" alt="logo">
+					<p class="m-auto">© <?=date('Y')?>&nbsp;{{__('All rights reserved')}}</p></div>
+					<div class="col-12 col-md-5 col-lg-3 text-md-right text-center"><a href="#" >{{__('Privacy policy')}}</a></div>
 				</div>
 			</div>
 		</div>
@@ -77,13 +79,13 @@
 </body>
 </html>
 
-<link href="{{ asset('/vendor/chernogolov/fogcms/public/css/vendor/magnific-popup.css') }}" rel="stylesheet">
-<link href="{{ asset('/vendor/chernogolov/fogcms/public/css/vendor/slick.css') }}" rel="stylesheet" >
-<link href="{{ asset('/vendor/chernogolov/fogcms/public/css/vendor/slick-theme.css') }}" rel="stylesheet" >
+<link href="{{ asset('/vendor/fogcms/css/vendor/magnific-popup.css') }}" rel="stylesheet">
+<link href="{{ asset('/vendor/fogcms/css/vendor/slick.css') }}" rel="stylesheet" >
+<link href="{{ asset('/vendor/fogcms/css/vendor/slick-theme.css') }}" rel="stylesheet" >
 
 
 <script src="{{ asset('js/app.js') }}"></script>
-<script src="{{ asset('/vendor/chernogolov/fogcms/public/js/vendor/slick.js') }}"></script>
-<script src="{{ asset('/vendor/chernogolov/fogcms/public/js/lk.js') }}"></script>
-<script src="{{ asset('/vendor/chernogolov/fogcms/public/js/vendor/jquery.magnific-popup.min.js') }}"></script>
+<script src="{{ asset('/vendor/fogcms/js/vendor/slick.js') }}"></script>
+<script src="{{ asset('/vendor/fogcms/js/lk.js') }}"></script>
+<script src="{{ asset('/vendor/fogcms/js/vendor/jquery.magnific-popup.min.js') }}"></script>
 @stack('scripts')

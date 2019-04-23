@@ -222,7 +222,7 @@ class ExchangeErc extends Model
 
 //        $meteringDevicesValues = MeteringDevicesValues::where('account_number', $account->account_number)->first();
 //        if(!$meteringDevicesValues)
-        $period = Carbon::now()->startOfYear()->toIso8601String();
+            $period = Carbon::now()->startOfYear()->toIso8601String();
 //        else
 //            $period = Carbon::now()->startOfMonth()->toIso8601String();
 
