@@ -556,6 +556,9 @@ class Records extends Model
             $reg_attrs = Collect(Attr::getRegsAttrs($id))->keyBy('name');
             foreach($data as $item)
             {
+                if(is_object($item))
+                    $item = (array)$item;
+
                 if(isset($item['id']) && $item['id'] && Self::getRecord($item['id']))  // update record
                 {
                     foreach($item as $key => $value)
