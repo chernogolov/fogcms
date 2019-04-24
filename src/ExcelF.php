@@ -8,7 +8,7 @@ use Rap2hpoutre\FastExcel\FastExcel;
 use Chernogolov\Fogcms;
 use Chernogolov\Fogcms\Records;
 
-class Excel extends Model
+class ExcelF extends Model
 {
     //
     public static function exportData($data, $node = null)

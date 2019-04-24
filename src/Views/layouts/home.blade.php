@@ -36,8 +36,8 @@
 
     <link href="{{ asset('/vendor/fogcms/css/vendor/reset.css') }}" rel="stylesheet" >
     <link href="{{ asset('/vendor/fogcms/css/vendor/fonts.css') }}" rel="stylesheet" >
-
 	<link href="{{ asset('/vendor/fogcms/css/lk.css') }}" rel="stylesheet" >
+    <link href="{{ asset('/css/style.css') }}" rel="stylesheet" >
 
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
@@ -50,7 +50,8 @@
 			<div class="container">
 				<div class="row">
 					<nav class="navbar navbar-expand-lg">
-					  	<a class="navbar-brand col-5 col-md-3 " href="/"><img class="float-left" src="{{env('APP_LOGO', '')}}" alt="logo"></a>
+					  	<a class="navbar-brand col-5 col-md-3 " href="/">
+                            <img class="float-left" src="{{env('APP_LOGO', '')}}" alt="logo"></a>
 					    <div class="col text-right">
 							<div class="login-hrefs">
 								<a href="/">{{__('Login')}}</a> <span>&nbsp;|&nbsp;</span> <a href="/register">{{__('Register')}}</a>

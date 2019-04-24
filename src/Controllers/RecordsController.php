@@ -26,7 +26,7 @@ use Chernogolov\Fogcms\RecordsRegs;
 use Chernogolov\Fogcms\User;
 use Chernogolov\Fogcms\Options;
 use Chernogolov\Fogcms\TmpUsers;
-//use Chernogolov\Fogcms\Excel;
+use Chernogolov\Fogcms\ExcelF;
 
 class RecordsController extends PanelController
 {
@@ -223,7 +223,7 @@ class RecordsController extends PanelController
         {
             $params['limit'] = 9999999;
             $data['records'] = Records::getRecords($id, $params);
-            return Excel::exportData($data['records'], $this->node);
+            return ExcelF::exportData($data['records'], $this->node);
         }
 
         //clear journal

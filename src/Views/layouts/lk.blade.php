@@ -39,8 +39,7 @@
     <link href="{{ asset('/vendor/fogcms/css/vendor/fonts.css') }}" rel="stylesheet" >
     @stack('styles')
     <link href="{{ asset('/vendor/fogcms/css/lk.css') }}" rel="stylesheet" >
-
-
+    <link href="{{ asset('/css/style.css') }}" rel="stylesheet" >
 </head>
 <body class="lk" >
     @if(isset($current_account['address.photo']))

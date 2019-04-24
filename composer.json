@@ -21,9 +21,8 @@
         "artisaninweb/laravel-soap": "0.3.0.9",
         "brizhanev/laravel-ulogin": "1.0.1",
         "caouecs/laravel-lang": "~3.0"
-
     },
-    "version": "1.1.4",
+    "version": "1.1.6",
     "autoload": {
         "psr-4": {
             "Chernogolov\\Fogcms\\": "src/"

@@ -148,7 +148,7 @@ $(function()
             data: formData,
             type: "POST",
             beforeSend: function() {
-                $('#'+destination+' #head-image').html('<img src="/vendor/chernogolov/fogcms/public/img/load_min.gif" style="height: 22px;">&nbsp;&nbsp;Загрузка...');
+                $('#'+destination+' #head-image').html('<img src="/vendor/fogcms/img/load_min.gif" style="height: 22px;">&nbsp;&nbsp;Загрузка...');
                 $('#'+btn+'-btn').attr('disabled', 'disabled');
             },
             success: function (data) {
@@ -179,7 +179,7 @@ $(function()
             data: {},
             type: "POST",
             beforeSend: function() {
-                $('#'+destination+' #head-image').html('<img src="/vendor/chernogolov/fogcms/public/img/load_min.gif" style="height: 22px;">&nbsp;&nbsp;Загрузка...');
+                $('#'+destination+' #head-image').html('<img src="/vendor/fogcms/img/load_min.gif" style="height: 22px;">&nbsp;&nbsp;Загрузка...');
             },
             success: function (data) {
                 $('#'+destination).html(data);
@@ -203,7 +203,7 @@ $(function()
             data: {},
             type: "POST",
             beforeSend: function() {
-                $('#'+destination+' #head-image').html('<img src="/vendor/chernogolov/fogcms/public/img/load_min.gif" style="height: 22px;">&nbsp;&nbsp;Загрузка...');
+                $('#'+destination+' #head-image').html('<img src="/vendor/fogcms/img/load_min.gif" style="height: 22px;">&nbsp;&nbsp;Загрузка...');
             },
             success: function (data) {
                 $('#'+destination).html(data);
@@ -221,7 +221,7 @@ $(function()
             data: {sid: $(this).data("sid")},
             type: "GET",
             beforeSend: function () {
-                $('#status_' + id).html('<img src="/vendor/chernogolov/fogcms/public/img/load_min.gif">');
+                $('#status_' + id).html('<img src="/vendor/fogcms/img/load_min.gif">');
             },
             success: function (data) {
                 $('#status_' + id).html(data['status'])
@@ -317,7 +317,7 @@ $(function()
                 data: formData,
                 type: "POST",
                 beforeSend: function() {
-                    $('#export').html('<img src="/vendor/chernogolov/fogcms/public/img/load_min.gif">').attr('disabled',true);
+                    $('#export').html('<img src="/vendor/fogcms/img/load_min.gif">').attr('disabled',true);
                 },
                 success: function (data) {
                     console.log(data);

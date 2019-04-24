@@ -1,5 +1,5 @@
 <div class="slidebar-left d-flex flex-column justify-content-between mt-4">
-    <img src="/public/img/tune.jpg" class="img-fluid d-none d-lg-block">
+    <img src="/img/tune.jpg" class="img-fluid d-none d-lg-block">
     <div class="object-selector d-none d-lg-block">
         {{__('Set up your profile!')}}
     </div>

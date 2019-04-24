@@ -4,7 +4,7 @@
             @if(isset($current_account['address.photo']))
                 <img src="/imagecache/house/{{$current_account['address.photo']}}" class="img-fluid">
             @else
-                <img src="/public/img/ekb.jpg" class="img-fluid">
+                <img src="/img/ekb.jpg" class="img-fluid">
             @endif
         </a>
         <div class="object-selector">
