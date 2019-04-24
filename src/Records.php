@@ -114,7 +114,7 @@ class Records extends Model
         {
             $fields = Attr::getRegsAttrs($id);
             foreach($fields as $f)
-             $params['fields'][$f->name] = $f;
+                $params['fields'][$f->name] = $f;
         }
 //dd($params);
         //set fields
@@ -397,7 +397,7 @@ class Records extends Model
 //        foreach($rs as $r)
 //        {
 //            $new_rs[] = $r->regs_id;
-            //ig regs_id not in regs
+        //ig regs_id not in regs
 //            if(!in_array($r->regs_id, $regs))
 //                DB::table('records_regs')->where([['records_id', '=', $record_id],['regs_id', '=', $r->regs_id]])->delete();
 //        }
@@ -556,8 +556,7 @@ class Records extends Model
             $reg_attrs = Collect(Attr::getRegsAttrs($id))->keyBy('name');
             foreach($data as $item)
             {
-                $item = (array)$item;
-                if(isset($item['id']) && Self::getRecord($item['id']))  // update record
+                if(isset($item['id']) && $item['id'] && Self::getRecord($item['id']))  // update record
                 {
                     foreach($item as $key => $value)
                     {
@@ -580,6 +579,7 @@ class Records extends Model
                 }
                 else   // add new record
                 {
+
                     foreach($item as $key => $value)
                     {
                         if($reg_attrs->get($key))
