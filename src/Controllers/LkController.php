@@ -103,7 +103,7 @@ class LkController extends PanelController
         $this->data['sidebar'][] = view('fogcms::lk/sidebar', ['accounts' => $this->accounts, 'current_account' => $this->current_account]);
         $this->data['user'] = User::where('id', '=', Auth::user()->id)->first();
         $this->data['current_account'] = $this->current_account;
-        $this->data['title'] = __('Userarea') . ' ' . env('APP_NAME', '');
+        $this->data['title'] = $this->title;
 
         return view($this->template, $this->data);
     }
