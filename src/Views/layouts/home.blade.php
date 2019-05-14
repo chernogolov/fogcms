@@ -27,7 +27,7 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>@isset($title) {{$title}} @endisset</title>
+    <title>@isset($title) {{$title}} @else {{env('APP_NAME', '')}} @endisset</title>
     <link rel="icon" type="image/x-icon" href="{{env('APP_FAVICON', '')}}">
 
 	<link href="{{ asset('css/app.css') }}" rel="stylesheet" >
