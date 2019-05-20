@@ -1,6 +1,6 @@
 <div class="col-12">
     <div class="container-input">
-       <h1 class="blue">{{__('Edit your profile')}}</h1>
+       <h4 class="blue">{{__('Edit your account')}}</h4>
        <form method="post" class="form-horizontal mt-5" id="editForm" enctype="multipart/form-data"
           xmlns="http://www.w3.org/1999/html">
         {{ csrf_field() }}
@@ -8,20 +8,9 @@
             <label for="inputPhoto" class="col-sm-4 col-form-label">{{__('Your photo')}}</label>
             <div class="col-sm-8">
                 <div class="row">
-                    @if(isset($user->image) && strlen($user->image)>0)
-                        <div class="col-6 ">
-                            <img class="img-fluid user-avatar" src="@if(isset($user->image))/imagecache/original/{{$user->image}}@else /img/default-user.jpg @endif" alt="{{__('Avatar')}}">
-                        </div>
-                        {{--<div class="col-6 ">--}}
-                            {{--<div class="preview-wrapper" style="position: relative;overflow:hidden;width:80px;height:80px;">--}}
-                                {{--<img class="preview" src="/imagecache/original/{{$user->image}}" alt="{{__('Preview')}}">--}}
-                            {{--</div>--}}
-                        {{--</div>--}}
-                    @else
-                        <div class="col-6 ">
-                            <img class="img-fluid" src="/img/default-user.jpg " alt="{{__('Preview')}}">
-                        </div>
-                    @endif
+                    <div class="col-6 ">
+                        <img class="img-fluid" src="@if(isset($user->image))/imagecache/original/{{$user->image}}@else /img/default-user.jpg @endif" alt="login">
+                    </div>
                 </div>
                 <input type="file" accept="image/jpeg,image/png" name="user[image]" class="form-control mt-4" form="editForm" placeholder="{{__('Change you photo')}}">
                 @if ($errors->has('user.image'))
@@ -79,45 +68,4 @@
     </form>
     </div>
 </div>
-@push('styles')
-    <link href="{{ asset('/vendor/fogcms/css/vendor/imgareaselect/imgareaselect-default.css') }}" rel="stylesheet" >
-@endpush
-@push('scripts')
-        <script src="{{ asset('/vendor/fogcms/js/vendor/jquery.imgareaselect.pack.js') }}"></script>
-        <script type="text/javascript">
-        $(document).ready(function () {
-
-//            var scale = $(".user-avatar").width() * 100 / 80;
-//            alert(scale);
-
-//            $('.preview').css({
-//                width:'98%'
-//                });
-//
-//            $('.user-avatar').imgAreaSelect({
-//                handles: true,
-//                aspectRatio: '1:1',
-//                x1: 0,
-//                y1: 0,
-//                x2: $(".user-avatar").width()-1,
-//                y2: $(".user-avatar").width()-1,
-//                minWidth: 80,
-//                minHeight: 80,
-//                onSelectChange: preview
-//            });
-        });
-
-        function preview(img, selection) {
-            var scaleX = 100 / (selection.width || 1);
-            var scaleY = 100 / (selection.height || 1);
-
-            $('.preview').css({
-                width: Math.round(scaleX * 135) + 'px',
-                eight: Math.round(scaleY * 80) + 'px',
-                marginLeft: '-' + Math.round(scaleX * selection.x1) + 'px',
-                marginTop: '-' + Math.round(scaleY * selection.y1) + 'px'
-            });
-        }
-        </script>
-@endpush
 

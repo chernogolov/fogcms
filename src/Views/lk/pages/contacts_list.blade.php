@@ -6,7 +6,7 @@
                     <div class="col-12">
                         <div class="media">
                          <a href="{{route('contact', ['id' => $item->id])}}">
-                              <img class="mr-3 img-fluid rounded-circle" src="@if(isset($item->photo) && strlen($item->photo)>0)/imagecache/avatar/{{$item->photo}}@else /public/img/default-user-avatar.jpg @endif" alt="login">
+                              <img class="mr-3 img-fluid rounded-circle" src="@if(isset($item->photo) && strlen($item->photo)>0)/imagecache/avatar/{{$item->photo}}@else /img/default-user-avatar.jpg @endif" alt="login">
                          </a>
                           <div class="media-body">
                             <h5 class="mt-0 mb-2 float-lg-left"><strong><a href="{{route('contact', ['id' => $item->id])}}">{{$item->fio}}</a></strong></h5>
