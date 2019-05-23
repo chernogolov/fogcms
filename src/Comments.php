@@ -14,13 +14,18 @@ class Comments extends Model
 {
     //
     protected $table = 'comments';
+    public $timestamps = false;
 
     public static function saveComment($data, $rid)
     {
         $insertdata['record_id'] = $rid;
         $insertdata['text'] = $data['text'];
         $insertdata['added_on']= \Carbon\Carbon::now()->toDateTimeString();
-        $insertdata['user_id'] = Auth::user()->id;
+
+        if(!isset($data['user_id']))
+            $insertdata['user_id'] = Auth::user()->id;
+        else
+            $insertdata['user_id'] = $data['user_id'];
 
         $comment_id = DB::table('comments')->insertGetId($insertdata);
         if(isset($data['loaded']) && !empty($data['loaded']))
@@ -70,5 +75,12 @@ class Comments extends Model
             $r = Storage::delete('/public/' . $img->image);
 
         Self::where('id', '=', $id)->delete();
+    }
+
+    public static function updateComment($data, $id)
+    {
+        $insertdata = [];
+        $insertdata['text'] = $data['text'];
+        Self::where('id', '=', $id)->update($insertdata);
     }
 }

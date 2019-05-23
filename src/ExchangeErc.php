@@ -10,7 +10,10 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
+
 use Chernogolov\Fogcms\Attr;
+
 
 use SoapClient;
 use Chernogolov\Fogcms\Records;
@@ -247,8 +250,36 @@ class ExchangeErc extends Model
                 'accessToken' => $token
             ]);
         }
-
         dd($result);
+    }
 
+    public static function getInvoice($account, $month = null)
+    {
+        !$month ? $month = date('m') - 1 : null;
+        $subMont = date('m') - $month;
+        $subMont <= 0 ? $subMont += 12 : null;
+
+        $beginDate = Carbon::now()->subMonths($subMont)->startOfMonth()->toIso8601String();
+
+        $token = Self::auth();
+        $client = new SoapClient("https://api.erc-ekb.ru/Services/LsService.svc?wsdl", array(
+            'trace'=> true,
+            'exceptions' => true,
+            'encoding' => 'UTF-8',
+            'compression' => true,
+        ));
+
+        $result = $client->DownloadQuittance([
+            'lsNumber' => $account->account_number,
+            'beginDate' => $beginDate,
+            'accessToken' => $token
+        ]);
+
+        if(isset($result->DownloadQuittanceResult->Content))
+        {
+            $filename = $account->account_number . '.pdf';
+            Storage::put('/public/invoice/' . $month . '/' . $filename,  $result->DownloadQuittanceResult->Content);
+            //return Storage::download('/public/invoice/' . $month . '/' . $filename);
+        }
     }
 }

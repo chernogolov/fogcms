@@ -264,6 +264,11 @@ class Attr extends Model
 
     //----------------------------------------------------------------------------
 
+    public static function getRecordFiles($rid)
+    {
+        return DB::table('attrs_media')->where('record_id', '=', $rid)->get();
+    }
+
     public static function getImageValues($attr, $rid)
     {
         return DB::table('attrs_media')->where([['attr_id', '=', $attr->attr_id], ['record_id', '=', $rid]])->get();

@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Notification;
 
 use Chernogolov\Fogcms\Controllers\LkController;
 use Chernogolov\Fogcms\Notifications\AddRecord;
+use Chernogolov\Fogcms\Jobs\GenerateInvoice;
+
 
 use Chernogolov\Fogcms\Records;
 use Chernogolov\Fogcms\Attr;
@@ -45,11 +47,19 @@ class FinanceController extends LkController
 
         $this->title = __('Utilites');
 
+        $post_data = $request->all();
+        if ($post_data) {
+            if (isset($post_data['generate-invoice'])) {
+                $job = (new GenerateInvoice((object)$this->current_account, (int)$post_data['month']));
+                dispatch($job);
+            }
+        }
+
         if($request->ajax() || $view)
-            return view('fogcms::lk/pages/charges', []);
+            return view('fogcms::lk/pages/charges', $this->current_account);
         else
         {
-            $this->data['views'][] = view('fogcms::lk/pages/charges', []);
+            $this->data['views'][] = view('fogcms::lk/pages/charges', $this->current_account);
             return $this->index();
         }
     }

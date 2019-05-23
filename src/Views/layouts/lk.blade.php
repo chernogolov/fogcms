@@ -24,7 +24,7 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>@isset($title) {{$title}} @else {{env('APP_NAME', '')}} @endisset</title>
+    <title>@isset($title) {{$title}} @endisset</title>
     <link rel="icon" type="image/x-icon" href="{{env('APP_FAVICON', '')}}">
 
     <!-- Scripts -->
@@ -40,6 +40,7 @@
     @stack('styles')
     <link href="{{ asset('/vendor/fogcms/css/lk.css') }}" rel="stylesheet" >
     <link href="{{ asset('/css/style.css') }}" rel="stylesheet" >
+
 </head>
 <body class="lk" >
     @if(isset($current_account['address.photo']))
@@ -121,9 +122,9 @@
                         <div class="lk-user justify-content-end ">
                             <div class="login-foto float-left text-right ">
                                 <a class="d-flex align-items-center d-lg-none justify-content-end" href="{{route('lk-profile')}}">
-                                    <img class="rounded-circle img-fluid w-50" src="@if(isset($user->image) && strlen($user->image)>0)/imagecache/avatar/{{$user->image}}@else /img/default-user.jpg @endif" alt="login">
+                                    <img class="rounded-circle img-fluid w-50" src="@if(isset($user->image) && strlen($user->image)>0)/imagecache/avatar/{{$user->image}}@else /public/img/default-user.jpg @endif" alt="login">
                                 </a>
-                                <img class="d-none d-lg-inline img-fluid" src="@if(isset($user->image) && strlen($user->image)>0)/imagecache/avatar/{{$user->image}}@else /img/default-user.jpg @endif" alt="login">
+                                <img class="d-none d-lg-inline img-fluid" src="@if(isset($user->image) && strlen($user->image)>0)/imagecache/avatar/{{$user->image}}@else /public/img/default-user.jpg @endif" alt="login">
                             </div>
                             <div class="login-hrefs float-left dropdown">
                                 <button class="dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >@isset($user->name){{str_limit($user->name, 20)}}@endisset&nbsp;</button>

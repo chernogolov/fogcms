@@ -36,5 +36,8 @@ return [
     'accepted_values_reg_id'    => env('ACCEPTED_VALUES_REG_ID', ''),
     'contacts_reg_id'           => env('CONTACTS_REG_ID', ''),
     'documents_reg_id'          => env('DOCUMENTS_REG_ID', ''),
+    'organisation_reg_id'       => env('ORGANISATION_REG_ID', ''),
+    'addresses_reg_id'          => env('ADDRESSES_REG_ID', ''),
+    'ads_user'                  => env('ADS_USER', ''),
 
 ];

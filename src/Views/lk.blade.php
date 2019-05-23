@@ -10,7 +10,7 @@
                             {!! $bar !!}
                         @endforeach
                     </div>
-                    <div class="col content mt-4">
+                    <div class="col-lg-9 content mt-4">
                         <div class="row">
                         @isset($views)
                             @foreach ($views as $view)

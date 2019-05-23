@@ -376,7 +376,6 @@ class Records extends Model
     public static function saveRecord($regs, $data, $attrs, $reg_id = null)
     {
         Attr::$import = Self::$import;
-
         if(!is_array($regs))
             $regs = array($regs);
 
@@ -384,11 +383,13 @@ class Records extends Model
 
         //save record data ----------------------
         $record_id = $data['id'];
-        unset($data['id']);
 
-        DB::table('records')
-            ->where('id', $record_id)
-            ->update($data);
+        $record = Self::find($record_id);
+        foreach ($record as $key => $value) {
+            if(isset($data[$key]))
+                $record[$key] = $data[$key];
+        }
+        $record->save();
 
         //save record regs ----------------------
         //get all regs

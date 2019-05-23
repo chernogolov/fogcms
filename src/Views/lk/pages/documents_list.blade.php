@@ -1,5 +1,5 @@
 <div class="col-12">
-    <div class="container-input">
+    <div class="container-input mb-4">
        <h1 class="blue mb-5">{{__('Documents')}}</h1>
             <div class="row">
                 @foreach($documents as $item)

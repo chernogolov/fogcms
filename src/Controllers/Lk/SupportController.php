@@ -2,6 +2,7 @@
 
 namespace Chernogolov\Fogcms\Controllers\Lk;
 
+use Chernogolov\Fogcms\Jobs\NewTicket;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
@@ -31,9 +32,9 @@ class SupportController extends LkController
     {
         $this->getAccounts();
 
-        $this->data['views'][] = $this->qA($request, true);
         $this->data['views'][] = $this->getTickets($request, true);
         $this->data['views'][] = $this->documentsList($request, true);
+        $this->data['views'][] = $this->qA($request, true);
 
         $this->title = __('Support center');
 
@@ -112,6 +113,9 @@ class SupportController extends LkController
                         file_get_contents('https://api.telegram.org/bot608599411:AAFPZIybZ-O9-t4y_rlRxmtQV4i-sV8aF6c/sendMessage?chat_id=293756888&text=gkh2 send ' . $user->email . ' notification error ' . $e);
                     }
                 }
+
+                $job = (new NewTicket(Records::getRecord($rid)));
+                dispatch($job);
             }
 
             return redirect(route('tickets'));
@@ -178,8 +182,7 @@ class SupportController extends LkController
     public function viewTicket(Request $request, $id)
     {
         $this->title = __('View');
-        $record = Records::where('id', '=', $id)->first();
-
+        $record = (object)Records::getRecord($id);
         $post_data = $request->all();
         if(isset($post_data['delete']))
         {

@@ -6,7 +6,7 @@
                 <div class="col-12 col-sm-6 mb-3">
                     <div class="media">
                      <a href="{{route('news-item', ['id' => $item->id])}}">
-                          <img class="mr-3 img-fluid" src="@if(isset($item->photo) && strlen($item->photo)>0)/imagecache/small/{{$item->photo}}@else /img/default-news-list.jpg @endif" alt="login">
+                          <img class="mr-3 img-fluid" src="@if(isset($item->photo) && strlen($item->photo)>0)/imagecache/small/{{$item->photo}}@else /public/img/default-news-list.jpg @endif" alt="login">
                      </a>
                       <div class="media-body">
                         <h5 class="mt-2 mb-2 "><strong><a href="{{route('news-item', ['id' => $item->id])}}">{{$item->title}}</a></strong></h5>

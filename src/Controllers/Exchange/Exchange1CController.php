@@ -29,8 +29,9 @@ class Exchange1CController extends ODataController
 
     public function newTicket(Request $request, $id)
     {
-        $data = Records::getRecord($id);
-        Exchange1C::netTicket($data);
+//        $data = Records::getRecord($id);
+//        Exchange1C::netTicket($data);
+          Exchange1C::updateNewTickets();
     }
 
     public function pushRecord()
