@@ -129,6 +129,7 @@ Route::match(['get', 'post'], '/record/{id}/{rid}', 'Chernogolov\Fogcms\Controll
 // EXCHANGE ROUTE SETTINGS
 Route::match(['get', 'post'], '/get-devices', 'Chernogolov\Fogcms\Controllers\Exchange\ExchangeErcController@getDevices')->name('get-devices')->middleware('web');
 Route::match(['get', 'post'], '/newticket/{id}', 'Chernogolov\Fogcms\Controllers\Exchange\Exchange1CController@newTicket')->name('newticket')->middleware('web');
+Route::match(['get', 'post'], '/updatetickets', 'Chernogolov\Fogcms\Controllers\Exchange\Exchange1CController@updateTickets')->name('updatetickets')->middleware('web');
 
 // END EXCHANGE ROUTE SETTINGS
 

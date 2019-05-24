@@ -34,8 +34,9 @@ class Exchange1CController extends ODataController
           Exchange1C::updateNewTickets();
     }
 
-    public function pushRecord()
-    {
 
+    public function updateTickets()
+    {
+        Exchange1C::updateNewTickets();
     }
 }

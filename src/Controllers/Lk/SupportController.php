@@ -47,9 +47,9 @@ class SupportController extends LkController
         $validate_attr = [];
         $additional = [];
         $sender = '';
-        $subject = __('New ticket ');
+        $subject = __('New ticket');
 
-        $this->title = __('Create ');
+        $this->title = __('Create');
 
         if($from_rid)
         {
