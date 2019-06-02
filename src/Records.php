@@ -28,12 +28,16 @@ class Records extends Model
         return $this->hasMany('App\Records_Regs');
     }
 
-    public static function getRecord($id, $fields = true)
+    public static function getRecord($id, $fields = true, $user_id = null)
     {
-        $data = DB::table('records')
+        $q = DB::table('records')
             ->join('records_regs', 'records.id', '=', 'records_regs.records_id')
-            ->where('records.id', $id)
-            ->select('records.*')
+            ->where('records.id', $id);
+
+        if($user_id)
+            $q->where('records.user_id', $user_id);
+
+        $data = $q->select('records.*')
             ->first();
 
         if(!$data)
@@ -273,6 +277,8 @@ class Records extends Model
         $tickets->groupBy('records.id');
         if(isset($params['orderBy']))
         {
+            $tickets->orderBy('rating', 'ASC');
+
             if(isset($params['orderBy']['attr']))
             {
                 $attr_data = Attr::getAttrByName($params['orderBy']['attr']);
@@ -283,14 +289,13 @@ class Records extends Model
             }
             else
                 $tickets->orderBy($params['orderBy']['field'], $params['orderBy']['type']);
+
         }
         else
         {
             $tickets->orderBy('status', 'ASC');
             $tickets->orderBy('created_at', 'DESC');
         }
-
-
         if(!isset($params['offset']))
         {
             !isset($params['limit'])? $params['limit'] = 30 : null;
@@ -534,13 +539,12 @@ class Records extends Model
         return DB::table('records_statuses')->join('users', 'records_statuses.user_id', '=', 'users.id')->where('record_id', '=', $rid)->orderBy('added_on', $sort)->select(['records_statuses.*', 'users.name', 'users.email'])->get();
     }
 
-    public static function getRecordRegs($rid)
+    public static function getRecordRegs($rid, $uid = null)
     {
-        return DB::table('regs')
-            ->join('records_regs', 'regs.id', '=', 'records_regs.regs_id')
-            ->where('records_regs.records_id', '=', $rid)
-            ->select('regs.*');
+        $q = DB::table('regs')->join('records_regs', 'regs.id', '=', 'records_regs.regs_id');
+        $q->where('records_regs.records_id', '=', $rid);
 
+        return $q->select('regs.*');
     }
 
     public static function updateReg($reg_ids, $data)

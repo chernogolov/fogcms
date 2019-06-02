@@ -10,7 +10,7 @@
                 <div class="row">
                     @if(isset($user->image) && strlen($user->image)>0)
                         <div class="col-6 ">
-                            <img class="img-fluid user-avatar" src="@if(isset($user->image))/imagecache/original/{{$user->image}}@else /public/img/default-user.jpg @endif" alt="{{__('Avatar')}}">
+                            <img class="img-fluid user-avatar" src="@if(isset($user->image))/imagecache/original/{{$user->image}}@else /img/default-user.jpg @endif" alt="{{__('Avatar')}}">
                         </div>
                         {{--<div class="col-6 ">--}}
                             {{--<div class="preview-wrapper" style="position: relative;overflow:hidden;width:80px;height:80px;">--}}

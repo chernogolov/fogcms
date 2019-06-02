@@ -9,7 +9,7 @@
                         {{ csrf_field() }}
                         <div class="form-row">
                             <div class="col-12">
-                            <p >{{__('Generate invoice')}}</p>
+                            <small class="text-muted">Квитанция может формироваться в течение 1-2 минут.<br>Обновите страницу чтобы скачать сформированную квитанцию</small>
                             <hr>
                             </div>
                             <div class="col">
@@ -41,7 +41,7 @@
                           <th scope="col">Месяц</th>
                           <th scope="col">ЛС</th>
                           <th scope="col">Дата файла</th>
-                          <th scope="col">Файл</th>
+                          <th scope="col" class="text-right">Файл&nbsp;<span class="mdi mdi-file-pdf mdi-18px text-success"></span></th>
                         </tr>
                       </thead>
                       <tbody>
@@ -51,7 +51,7 @@
                             <td>{{$monts[$i]}}</td>
                             <td>{{$account_number}}</td>
                             <td>{{date('Y-m-d', Storage::lastModified('/public/invoice/' . $i . '/' . $account_number . '.pdf'))}}</td>
-                            <td><a target="_blank" href="/storage/invoice/{{$i}}/{{$account_number}}.pdf">Скачать</a></td>
+                            <td class="text-right"><a target="_blank" href="/storage/invoice/{{$i}}/{{$account_number}}.pdf">Скачать&nbsp;<span class="mdi mdi-download mdi-18px text-success "></span></a></td>
                           </tr>
                           @endif
                       @endfor

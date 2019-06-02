@@ -35,9 +35,15 @@ return [
     'news_reg_id'               => env('NEWS_REG_ID', ''),
     'accepted_values_reg_id'    => env('ACCEPTED_VALUES_REG_ID', ''),
     'contacts_reg_id'           => env('CONTACTS_REG_ID', ''),
-    'documents_reg_id'          => env('DOCUMENTS_REG_ID', ''),
     'organisation_reg_id'       => env('ORGANISATION_REG_ID', ''),
     'addresses_reg_id'          => env('ADDRESSES_REG_ID', ''),
     'ads_user'                  => env('ADS_USER', ''),
+
+    'documents_reg_id'          => env('DOCUMENTS_REG_ID', ''),
+    'prot_oss'                  => env('PROT_OSS_REG_ID', ''),
+    'prot_sov'                  => env('PROT_SOV_REG_ID', ''),
+    'fin_otch'                  => env('FIN_OTCH_REG_ID', ''),
+
+    'frisbi_link'               => env('FRISBI_LINK', ''),
 
 ];

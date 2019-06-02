@@ -2,7 +2,11 @@
     <div class="container-input mb-4">
         <div class="row">
             <div class="col-12 col-lg-6">
-                <h1 class="blue mb-2">{{__('Ticket')}} # {{ $data->Number }}</h1>
+                <h1 class="blue mb-2">{{__('Ticket')}} # @isset($data->Number){{ $data->Number }}@endif</h1>
+                <span class="text-muted">{{__('Status')}}:</span>
+                <span class="label @if($data->status == 1) label-danger @elseif ($data->status == 2) label-warning @elseif ($data->status == 3) label-success @elseif ($data->status == 4) label-default @endif">
+                    @if($data->status == 1) НОВОЕ @elseif ($data->status == 2) В РАБОТЕ @elseif ($data->status == 3) ВЫПОЛНЕНО @elseif ($data->status == 4) ЗАКРЫТО АВТОРОМ @endif
+                </span>
             </div>
             <div class="col-12 col-lg-6">
                 <div class="row mb-2 mt-lg-0 mt-3">

@@ -5,6 +5,8 @@ namespace Chernogolov\Fogcms\Controllers\Lk;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Config;
+
 
 use Chernogolov\Fogcms\Controllers\LkController;
 
@@ -12,6 +14,7 @@ use Chernogolov\Fogcms\Records;
 use Chernogolov\Fogcms\Attr;
 use Chernogolov\Fogcms\Jobs\LoadErcData;
 use Chernogolov\Fogcms\MeteringDevicesValues;
+
 
 
 class DevicesController extends LkController
@@ -65,7 +68,7 @@ class DevicesController extends LkController
                     'attr' => 'ServiceName','type' => 'ASC','field' => 'value'
                 ]
              ];
-            $devices = Records::getRecords($this->devices_reg_id, $params);
+            $devices = Records::getRecords(Config::get('fogcms.devices_reg_id'), $params);
         }
 
         $this->devices = $devices;
@@ -121,7 +124,7 @@ class DevicesController extends LkController
                         ->withInput();
                 }
 
-                $attrs = Collect(Attr::getRegsAttrs($this->add_values_reg_id))->keyBy('name');
+                $attrs = Collect(Attr::getRegsAttrs(Config::get('fogcms.add_values_reg_id')))->keyBy('name');
                 foreach($this->devices as $device)
                 {
                     $nulled = true;
@@ -139,7 +142,7 @@ class DevicesController extends LkController
                     }
 
                     if(!$nulled)
-                        $rid = Records::addRecord($this->add_values_reg_id, $sendData);
+                        $rid = Records::addRecord(Config::get('fogcms.add_values_reg_id'), $sendData);
                 }
             }
         }
@@ -180,7 +183,7 @@ class DevicesController extends LkController
                     'Device' => [['Device','=',$dev->id]],
                 ]
             ];
-            $values[$dev->id] = Records::getRecords($this->add_values_reg_id, $params);
+            $values[$dev->id] = Records::getRecords(Config::get('fogcms.add_values_reg_id'), $params);
         }
 
         return view('fogcms::lk/pages/sendet_values', ['devices' => $this->devices, 'values' => $values]);

@@ -92,7 +92,7 @@ class ExchangeErcController extends Controller
 
     public function getDevices()
     {
-        return ExchangeErc::getInvoice((object)['id' => 19384,'account_number' =>  1900126869]);
+        return ExchangeErc::getInvoice((object)['account_number' =>  1900126500]);
 //        $token = $this->auth();
 //        $result = $this->client->GetMeteringDevices([
 //            'lsNumber' => $lsNumber,

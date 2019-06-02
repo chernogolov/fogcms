@@ -547,6 +547,13 @@ class Attr extends Model
 
     public static function setDigitValue($data, $attr)
     {
+        if($data['value'] == 'autoincrement')
+        {
+            //получаем все значение этого атрибута в данном
+            $max = DB::table('attrs_digit')->where([['attr_id', $data['attr_id']]])->max('value');
+            $data['value'] = (int)$max/100 + 1;
+        }
+
         if(!isset($data['value']))
             return DB::table('attrs_digit')->where([['attr_id', $data['attr_id']], ['record_id', $data['record_id']]])->delete();
 

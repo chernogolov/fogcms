@@ -3,14 +3,9 @@
 namespace Chernogolov\Fogcms\Controllers\Lk;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Notification;
-
 use Chernogolov\Fogcms\Controllers\LkController;
 use Chernogolov\Fogcms\Notifications\AddRecord;
 use Chernogolov\Fogcms\Jobs\GenerateInvoice;
-
 
 use Chernogolov\Fogcms\Records;
 use Chernogolov\Fogcms\Attr;
@@ -33,6 +28,11 @@ class FinanceController extends LkController
     {
         $this->getAccounts();
 
+        if($this->Charges($request))
+        {
+            sleep(3);
+            return redirect('finance');
+        }
         $this->data['views'][] = $this->getCharges($request, true);
         $this->data['views'][] = $this->getPayments($request, true);
 
@@ -41,24 +41,32 @@ class FinanceController extends LkController
         return $this->index();
     }
 
+    public function Charges(Request $request)
+    {
+        $post_data = $request->all();
+        if ($post_data) {
+            if (isset($post_data['generate-invoice'])) {
+                $job = (new GenerateInvoice((object)$this->current_account, (int)$post_data['month']));
+                dispatch($job);
+                return true;
+            }
+        }
+
+    }
+
     public function getCharges(Request $request, $view = false)
     {
         $this->getAccounts();
 
         $this->title = __('Utilites');
 
-        $post_data = $request->all();
-        if ($post_data) {
-            if (isset($post_data['generate-invoice'])) {
-                $job = (new GenerateInvoice((object)$this->current_account, (int)$post_data['month']));
-                dispatch($job);
-            }
-        }
-
         if($request->ajax() || $view)
             return view('fogcms::lk/pages/charges', $this->current_account);
         else
         {
+            if($this->Charges($request))
+                return redirect('charges');
+
             $this->data['views'][] = view('fogcms::lk/pages/charges', $this->current_account);
             return $this->index();
         }
@@ -66,12 +74,14 @@ class FinanceController extends LkController
 
     public function getPayments(Request $request, $view = false)
     {
+        $this->getAccounts();
+
         $this->title = __('Payments');
         if($request->ajax() || $view)
-            return view('fogcms::lk/pages/payments', []);
+            return view('fogcms::lk/pages/payments', $this->current_account);
         else
         {
-            $this->data['views'][] = view('fogcms::lk/pages/payments', []);
+            $this->data['views'][] = view('fogcms::lk/pages/payments', $this->current_account);
             return $this->index();
         }
     }

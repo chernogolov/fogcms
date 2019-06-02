@@ -275,6 +275,7 @@ class ExchangeErc extends Model
             'accessToken' => $token
         ]);
 
+
         if(isset($result->DownloadQuittanceResult->Content))
         {
             $filename = $account->account_number . '.pdf';

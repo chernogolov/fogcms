@@ -489,7 +489,8 @@ class RecordsController extends PanelController
 
             if($rsid)
             {
-                $record = Records::getRecord($rid, false);
+
+                $record = Records::getRecord($rid);
                 $regs = Records::getRecordRegs($rid)->get();
                 foreach ($regs as $reg) {
                     $user_sends = RegsUsers::where([['user_id', '=', $record['user_id']], ['reg_id', '=', $reg->id]])->get();
@@ -498,13 +499,16 @@ class RecordsController extends PanelController
                         if(intval($send->email) == 1)
                             $channels[] = 'mail';
 
+                    $channels = array_unique($channels);
                     $user = User::where('id', '=', $record['user_id'])->first();
-                    try {
-                        Notification::send($user, new EditRecord($rid, '', $channels));
-                    } catch (\Exception $e) {
-                        file_get_contents('https://api.telegram.org/bot608599411:AAFPZIybZ-O9-t4y_rlRxmtQV4i-sV8aF6c/sendMessage?chat_id=293756888&text=gkh2 send ' . $user->email . ' notification error ' . $e);
-                    }
                 }
+
+                try {
+                    Notification::send($user, new EditRecord((object)$record, '', $channels));
+                } catch (\Exception $e) {
+                    file_get_contents('https://api.telegram.org/bot608599411:AAFPZIybZ-O9-t4y_rlRxmtQV4i-sV8aF6c/sendMessage?chat_id=293756888&text=gkh2 send ' . $user->email . ' notification error ' . $e);
+                }
+
 
                 return $rsid;
             }

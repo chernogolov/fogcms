@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Config;
+
 
 use Chernogolov\Fogcms\Controllers\LkController;
 use Chernogolov\Fogcms\Notifications\AddRecord;
@@ -33,7 +35,11 @@ class SupportController extends LkController
         $this->getAccounts();
 
         $this->data['views'][] = $this->getTickets($request, true);
-        $this->data['views'][] = $this->documentsList($request, true);
+        $this->data['views'][] = $this->documentsList($request, Config::get('fogcms.documents_reg_id'), true);
+        $this->data['views'][] = $this->documentsList($request, Config::get('fogcms.prot_oss'), true);
+        $this->data['views'][] = $this->documentsList($request, Config::get('fogcms.prot_sov'), true);
+        $this->data['views'][] = $this->documentsList($request, Config::get('fogcms.fin_otch'), true);
+
         $this->data['views'][] = $this->qA($request, true);
 
         $this->title = __('Support center');
@@ -57,7 +63,7 @@ class SupportController extends LkController
             $record = Records::getRecord($from_rid);
         }
 
-        $attrs = Attr::getRegsAttrs($this->tickets_reg_id, $from_rid);
+        $attrs = Attr::getRegsAttrs(Config::get('fogcms.tickets_reg_id'), $from_rid);
         $v = view('fogcms::lk/pages/new');
 
         foreach ($attrs as $attr)
@@ -74,6 +80,10 @@ class SupportController extends LkController
         if ($post_data) {
             $this->validate($request, $validate_attr);
             $regs = Records::getDestinationNodes($attrs, $post_data['attr']);
+            if(!empty($regs))
+                $destination = $regs;
+            else
+                $destination = Config::get('fogcms.tickets_reg_id');
 
             if ($from_rid) {
                 foreach ($post_data['attr'] as $k => $item) {
@@ -83,13 +93,13 @@ class SupportController extends LkController
             }
 
             try {
-                $rid = Records::addRecord($this->tickets_reg_id, $post_data['attr'], $additional);
+                $rid = Records::addRecord($destination, $post_data['attr'], $additional);
             } catch (ValidateException $errors) {
-                file_get_contents('https://api.telegram.org/bot608599411:AAFPZIybZ-O9-t4y_rlRxmtQV4i-sV8aF6c/sendMessage?chat_id=293756888&text=UG-ENERGO ID: ' . $rid . ' ' . implode(',', $this->tickets_reg_id));
+                file_get_contents('https://api.telegram.org/bot608599411:AAFPZIybZ-O9-t4y_rlRxmtQV4i-sV8aF6c/sendMessage?chat_id=293756888&text=UG-ENERGO ID: ' . $rid . ' ' . implode(',', Config::get('fogcms.tickets_reg_id')));
             }
 
             if (!isset($rid))
-                file_get_contents('https://api.telegram.org/bot608599411:AAFPZIybZ-O9-t4y_rlRxmtQV4i-sV8aF6c/sendMessage?chat_id=293756888&text=UG-ENERGO ID: ' . $rid . ' ' . implode(',', $this->tickets_reg_id));
+                file_get_contents('https://api.telegram.org/bot608599411:AAFPZIybZ-O9-t4y_rlRxmtQV4i-sV8aF6c/sendMessage?chat_id=293756888&text=UG-ENERGO ID: ' . $rid . ' ' . implode(',', Config::get('fogcms.tickets_reg_id')));
 
             if ($rid) {
                 $subject .= '#' . $rid;
@@ -105,17 +115,14 @@ class SupportController extends LkController
                 }
 
 
-                $users = User::whereIn('id', RegsUsers::getSendUsers($this->tickets_reg_id))->get();
+                $users = User::whereIn('id', RegsUsers::getSendUsers(Config::get('fogcms.tickets_reg_id')))->get();
                 foreach ($users as $user) {
                     try {
-                        Notification::send($user, new AddRecord($this->tickets_reg_id, $rid, $sender));
+                        Notification::send($user, new AddRecord(Config::get('fogcms.tickets_reg_id'), $rid, $sender));
                     } catch (\Exception $e) {
                         file_get_contents('https://api.telegram.org/bot608599411:AAFPZIybZ-O9-t4y_rlRxmtQV4i-sV8aF6c/sendMessage?chat_id=293756888&text=gkh2 send ' . $user->email . ' notification error ' . $e);
                     }
                 }
-
-                $job = (new NewTicket(Records::getRecord($rid)));
-                dispatch($job);
             }
 
             return redirect(route('tickets'));
@@ -152,7 +159,7 @@ class SupportController extends LkController
     {
         $this->title = __('Tickets');
 
-        $node = Reg::where('id', '=', $this->tickets_reg_id)->first();
+        $node = Reg::where('id', '=', Config::get('fogcms.tickets_reg_id'))->first();
 
         $attrs = Attr::getFields($node, ['entry']);
         $records = Records::getRecords(null, array('user_id' => Auth::user()->id, 'type' => 'tickets', 'fields' => $attrs['fields']));
@@ -182,7 +189,10 @@ class SupportController extends LkController
     public function viewTicket(Request $request, $id)
     {
         $this->title = __('View');
-        $record = (object)Records::getRecord($id);
+        $record = Records::getRecord($id, true, Auth::user()->id);
+        if(!$record)
+            return redirect(route('tickets'));
+
         $post_data = $request->all();
         if(isset($post_data['delete']))
         {
@@ -209,7 +219,7 @@ class SupportController extends LkController
 //            }
 //        }
 
-        $this->data['views'][] = view('fogcms::lk/pages/view_ticket', ['data' => $record]);
+        $this->data['views'][] = view('fogcms::lk/pages/view_ticket', ['data' => (object)$record]);
 
         $attrs = Attr::getRecordAttrs($id);
         foreach($attrs as $attr)
@@ -223,7 +233,7 @@ class SupportController extends LkController
         }
 
         $comments = Comments::getComments($id);
-        $this->data['views'][] = view('fogcms::lk/comments', ['record' => $record, 'data' => $comments, 'user_id' => Auth::user()->id, 'rid' => $id]);
+        $this->data['views'][] = view('fogcms::lk/comments', ['record' => (object)$record, 'data' => $comments, 'user_id' => Auth::user()->id, 'rid' => $id]);
         $this->data['views'][] = view('fogcms::lk/pages/endview');
 
         $data['title'] = $this->title;
@@ -253,7 +263,7 @@ class SupportController extends LkController
             'field' => 'Rating'
         ];
 
-        $d['data'] = Records::getRecords($this->qa_reg_id, $params)->groupBy('entry');
+        $d['data'] = Records::getRecords(Config::get('fogcms.qa_reg_id'), $params)->groupBy('entry');
 
         if($request->ajax() || $view)
             return view('fogcms::lk/pages/qa_themes', $d);
@@ -278,7 +288,7 @@ class SupportController extends LkController
         }
 
         $params['orderBy'] = ['field' => 'rating', 'type' => 'ASC'];
-        $contacts = Records::getRecords($this->contacts_reg_id, $params)->all();
+        $contacts = Records::getRecords(Config::get('fogcms.contacts_reg_id'), $params)->all();
 
         $this->data['views'][] = view('fogcms::lk/pages/contacts_list', ['contacts' => $contacts]);
         return $this->index($request, $this->data);
@@ -294,11 +304,11 @@ class SupportController extends LkController
         return $this->index($request, $this->data);
     }
 
-    public function documentsList(Request $request, $view = false)
+    public function documentsList(Request $request, $reg_id, $view = false)
     {
         $this->getAccounts();
-        $this->title = __('Documents');
-
+        $node = Reg::where('id', '=', $reg_id)->first();
+        $this->title = $node->name;
         $params = [];
         $params['filters']['multiaddress']['whereIn'][] = null;
         if(!empty($this->current_account)) {
@@ -312,13 +322,13 @@ class SupportController extends LkController
             'type' => 'DECS',
             'field' => 'value'
         ];
-        $documents = Records::getRecords($this->documents_reg_id, $params)->all();
+        $documents = Records::getRecords($reg_id, $params)->all();
 
         if($request->ajax() || $view)
-            return view('fogcms::lk/pages/documents_list', ['documents' => $documents]);
+            return view('fogcms::lk/pages/documents_list', ['documents' => $documents, 'node' => $node]);
         else
         {
-            $this->data['views'][] = view('fogcms::lk/pages/documents_list', ['documents' => $documents]);
+            $this->data['views'][] = view('fogcms::lk/pages/documents_list', ['documents' => $documents, 'node' => $node]);
             return $this->index();
         }
     }

@@ -33,15 +33,6 @@ class LkController extends PanelController
     //
     public $title = '';
     public $nodes;
-    public $accounts_reg_id;
-    public $devices_reg_id;
-    public $add_values_reg_id;
-    public $tickets_reg_id;
-    public $qa_reg_id;
-    public $news_reg_id;
-    public $accepted_values_reg_id;
-    public $contacts_reg_id;
-    public $documents_reg_id;
     public $accounts;
     public $current_account = [];
     public $template = 'fogcms::lk';
@@ -51,20 +42,6 @@ class LkController extends PanelController
 
     public $news_list_tpl = 'fogcms::lk/pages/news_list';
 
-    public function __construct()
-    {
-        parent::__construct();
-        $this->accounts_reg_id          = Config::get('fogcms.accounts_reg_id');
-        $this->devices_reg_id           = Config::get('fogcms.devices_reg_id');
-        $this->add_values_reg_id        = Config::get('fogcms.add_values_reg_id');
-        $this->tickets_reg_id           = Config::get('fogcms.tickets_reg_id');
-        $this->qa_reg_id                = Config::get('fogcms.qa_reg_id');
-        $this->news_reg_id              = Config::get('fogcms.news_reg_id');
-        $this->accepted_values_reg_id   = Config::get('fogcms.accepted_values_reg_id');
-        $this->contacts_reg_id          = Config::get('fogcms.contacts_reg_id');
-        $this->documents_reg_id         = Config::get('fogcms.documents_reg_id');
-    }
-
     public function getAccounts()
     {
         if(empty($this->accounts))
@@ -72,7 +49,7 @@ class LkController extends PanelController
             $params = [];
             $params['added_user'] = Auth::user()->id;
             $params['offset'] = 0;
-            $this->accounts = Records::getRecords($this->accounts_reg_id, $params)->sortBy('address');
+            $this->accounts = Records::getRecords(Config::get('fogcms.accounts_reg_id'), $params)->sortBy('address');
             if($this->accounts->count()>0)
             {
                 $current_account_id = session('ca' . Auth::user()->id);
@@ -154,7 +131,7 @@ class LkController extends PanelController
         if(!isset($this->params['orderBy']))
             $this->params['orderBy'] = ['attr' => 'Date','type' => 'DECS','field' => 'value'];
 
-        $news = Records::getRecords($this->news_reg_id, $this->params)->all();
+        $news = Records::getRecords(Config::get('fogcms.news_reg_id'), $this->params)->all();
         if($view)
             return view($this->news_list_tpl, ['news' => $news]);
         else

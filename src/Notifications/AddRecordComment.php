@@ -7,7 +7,7 @@ use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 
-class EditRecord extends Notification implements ShouldQueue
+class AddRecordComment extends Notification implements ShouldQueue
 {
     use Queueable;
 
@@ -52,8 +52,8 @@ class EditRecord extends Notification implements ShouldQueue
         return (new MailMessage)
             ->greeting('Уведомление')
             ->from('noreply@2gkh.ru', $this->sender)
-            ->subject('Статус обращения #' .$this->ticket->Number . ' поменялся')
-            ->line("Статус обращения #".$this->ticket->Number . ' поменялся')
+            ->subject('Новое сообщение в заявке #' .$this->ticket->Number)
+            ->line("Вы получили ответ на обращение #".$this->ticket->Number)
             ->action('ПОСМОТРЕТЬ', route('view-ticket', ['rid' => $this->ticket->id]))
             ->line('Это сообщение сформировано автоматически, пожалуйста не отвечайте на него.');
     }
@@ -67,8 +67,8 @@ class EditRecord extends Notification implements ShouldQueue
     public function toArray($notifiable)
     {
         return [
-            'theme' => 'Обращение №' . $this->ticket->Number,
-            'message' => "Статус обращения поменялся.",
+            'theme' => 'Новый ответ на обращение №' . $this->ticket->Number,
+            'message' => "Вы получили ответ на обращение.",
             'action' => route('view-ticket', ['rid' => $this->ticket->id]),
         ];
     }
