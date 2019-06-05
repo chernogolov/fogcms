@@ -59,7 +59,7 @@ Route::get('/documents', 'Chernogolov\Fogcms\Controllers\Lk\SupportController@do
 //END LK
 
 //REGISTERS
-Route::get('/panel', 'Chernogolov\Fogcms\Controllers\RecordsController@index')->name('regs')->middleware('web')->middleware('can:view-regs');
+Route::get('/panel', 'Chernogolov\Fogcms\Controllers\RecordsController@index')->name('regs')->middleware('web');
 Route::match(['get', 'post'], '/panel/trash', 'Chernogolov\Fogcms\Controllers\RecordsController@trash')->name('trash')->middleware('web')->middleware('can:view-regs');
 Route::match(['get', 'post'], '/panel/new/{id}', 'Chernogolov\Fogcms\Controllers\RecordsController@create')->name('create_record')->where('id', '[0-9]+')->middleware('web')->middleware('can:view-regs');
 Route::match(['get', 'post'], '/panel/{id}/{rid}', 'Chernogolov\Fogcms\Controllers\RecordsController@view')->name('view_record')->where(['id' => '[0-9]+', 'rid' => '[0-9]+'])->middleware('web')->middleware('can:view-regs');

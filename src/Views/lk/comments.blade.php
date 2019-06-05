@@ -12,7 +12,7 @@
             <div class="col-lg-5 col-12">
                 <div class="row mb-2">
                     <div class="col-3">
-                        <img class="rounded-circle img-fluid w-100" src="@if(isset($item->image) && strlen($item->image)>0)/imagecache/avatar/{{$item->image}}@else /public/img/default-user.jpg @endif" alt="login">
+                        <img class="rounded-circle img-fluid w-100" src="@if(isset($item->image) && strlen($item->image)>0)/imagecache/avatar/{{$item->image}}@else /img/default-user.jpg @endif" alt="login">
                     </div>
                     <div class="col-9">
                         <p class="mb-1"><small>{{ $item->name }}</small></p>

@@ -492,6 +492,7 @@ class RecordsController extends PanelController
 
                 $record = Records::getRecord($rid);
                 $regs = Records::getRecordRegs($rid)->get();
+                $users = [];
                 foreach ($regs as $reg) {
                     $user_sends = RegsUsers::where([['user_id', '=', $record['user_id']], ['reg_id', '=', $reg->id]])->get();
                     $channels = [];
