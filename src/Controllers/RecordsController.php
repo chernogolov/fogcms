@@ -200,7 +200,6 @@ class RecordsController extends PanelController
             if(isset($post_data['import_file']))
             {
                 Excel::import(new RecordsImport($id), request()->file('import_file'));
-//                Excel::importData($id, $request->file('import_file'));
                 return redirect(route('reg_records', ['id' => $id]));
             }
 

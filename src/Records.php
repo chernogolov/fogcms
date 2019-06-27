@@ -561,7 +561,7 @@ class Records extends Model
             $reg_attrs = Collect(Attr::getRegsAttrs($id))->keyBy('name');
             foreach($data as $item)
             {
-                if(is_object($item))
+                if(is_object($item) && !is_a($item, 'Illuminate\Support\Collection'))
                     $item = (array)$item;
 
                 if(isset($item['id']) && $item['id'] && Self::getRecord($item['id']))  // update record
@@ -587,7 +587,6 @@ class Records extends Model
                 }
                 else   // add new record
                 {
-
                     foreach($item as $key => $value)
                     {
                         if($reg_attrs->get($key))
