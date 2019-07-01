@@ -318,6 +318,7 @@ class RecordsController extends PanelController
 
     public function create(Request  $request, $id)
     {
+        $this->getNodes();
         $this->options = Options::getOptions('view', true);
         $this->node = Reg::where('id', '=', $id)->first();
         $validate_attr = [];
@@ -349,11 +350,16 @@ class RecordsController extends PanelController
         {
             $this->validate($request, $validate_attr);
 
-            $regs = Records::getDestinationNodes($attrs, $post_data['attr']);
-            if(!empty($regs))
-                $destination = $regs;
+            if(isset($post_data['destination']) && !empty($post_data['destination']))
+                $destination = $post_data['destination'];
             else
                 $destination = $id;
+
+//            $regs = Records::getDestinationNodes($attrs, $post_data['attr']);
+//            if(!empty($regs))
+//                $destination = $regs;
+//            else
+
 
             $rid = Records::addRecord($destination, $post_data['attr']);
 
@@ -369,7 +375,7 @@ class RecordsController extends PanelController
                     isset($address['type']) ? $sender .= ' ' . $address['type'] : null;
                 }
 
-                $users = User::whereIn('id', RegsUsers::getSendUsers($regs))->get();
+                $users = User::whereIn('id', RegsUsers::getSendUsers($destination))->get();
                 foreach ($users as $user) {
                     try {
                         Notification::send($user, new AddRecord($id, $rid, $sender));
@@ -393,7 +399,7 @@ class RecordsController extends PanelController
         $this->title .= __('New record');
 
 
-        $view .= view('fogcms::records/endform', ['to_list' => Session::get('to_list'), 'back' => route('reg_records', ['id' => $id])]);
+        $view .= view('fogcms::records/endform', ['nodes' => $this->nodes, 'node' => $this->node, 'to_list' => Session::get('to_list'), 'back' => route('reg_records', ['id' => $id])]);
 
         if($request->ajax())
             return $view;
@@ -403,6 +409,7 @@ class RecordsController extends PanelController
 
     public function edit(Request  $request, $id, $rid)
     {
+        $this->getNodes();
         $validate_attr = [];
         $this->options = Options::getOptions('view', true);
         $this->node = Reg::where('id', '=', $id)->first();
@@ -413,6 +420,12 @@ class RecordsController extends PanelController
         $post_data = $request->all();
         if($post_data)
         {
+            if(isset($post_data['destination']) && !empty($post_data['destination']))
+                $destination = $post_data['destination'];
+            else
+                $destination = $id;
+
+
             foreach($attrs as $attr)
             {
                 if($attr->is_required && !isset($post_data['attr'][$attr->name]['save']))
@@ -421,7 +434,7 @@ class RecordsController extends PanelController
 
 
             $request->validate($validate_attr);
-            Records::saveRecord($id, $post_data['record'], $post_data['attr']);
+            Records::saveRecord($destination, $post_data['record'], $post_data['attr']);
 
             //go to list function
             if(isset($post_data['to_list']))
@@ -456,7 +469,7 @@ class RecordsController extends PanelController
             $view .= view('fogcms::records/attrs/'.$template, array('attr' => $attr, 'access' => $this->node->access));
         }
 
-        $view .= view('fogcms::records/endform', ['to_list' => Session::get('to_list'), 'back' => $back]);
+        $view .= view('fogcms::records/endform', ['nodes' => $this->nodes, 'node' => $this->node, 'to_list' => Session::get('to_list'), 'back' => $back]);
         if($request->ajax())
             return $view;
         else

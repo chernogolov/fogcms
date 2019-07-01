@@ -1,5 +1,5 @@
 <div class="row">
-    <div class="col-sm-4">
+    <div class="col-sm-3">
         <label class="control-label">
             {{ $attr->title }}
             @if($attr->is_required == 1)
@@ -10,13 +10,13 @@
             @endif
         </label>
     </div>
-    <div class="col-sm-8">
+    <div class="col-sm-9">
         <input type="hidden" name="attr[{{ $attr->name }}][attr_id]" value="{{ $attr->attr_id }}">
         <div class="input-group mb-3">
-          <div class="input-group-prepend">
+          <div class="input-group-prepend  w-50">
             <input autocomplete="off"
                    type="text"
-                   class="search-link sl sl-l"
+                   class="search-link sl sl-l w-100"
                    data-id="{{$attr->meta}}"
                    id='link-{{$attr->meta}}'
                    list="list-{{$attr->meta}}"

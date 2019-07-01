@@ -1,26 +1,26 @@
 <div class="row">
-    <div class="col-sm-4">
+    <div class="col-sm-3">
         <label class="control-label">
             {{ $attr->title }}
             @if($attr->is_required == 1)
                 <strong class="text-danger">*</strong>
                 <sup>
-                    <span class="mdi mdi-question-sign" data-toggle="tooltip" data-placement="right" title="Начните вводить значение в левом поле, а затем выберете его в правом"></span>
+                    <span class="mdi mdi-question-sign" data-toggle="tooltip" data-placement="right" title="{{__('Enter search word')}}"></span>
                 </sup>
             @endif
         </label>
     </div>
-    <div class="col-sm-8">
+    <div class="col-sm-9">
         <input type="hidden" name="attr[{{ $attr->name }}][attr_id]" value="{{ $attr->attr_id }}">
         <div class="input-group mb-3">
-          <div class="input-group-prepend">
+          <div class="input-group-prepend w-50">
             <input autocomplete="off"
                    type="text"
-                   class="search-link sl sl-l"
+                   class="search-link sl sl-l w-100"
                    data-id="{{$attr->meta}}"
                    id='link-{{$attr->meta}}'
                    list="list-{{$attr->meta}}"
-                   placeholder="поиск по: {{implode(', ',array_values($attr->data))}}" style="">
+                   placeholder="{{__('Search')}}: {{implode(', ',array_values($attr->data))}}" style="">
           </div>
           @if(isset($attr->values) && count($attr->values)>0)
               <select class="sl sl-r" data-id="{{$attr->meta}}" name="attr[{{ $attr->name }}][value]" id="list-{{$attr->meta}}"
@@ -61,13 +61,13 @@
                             </div>
                             <div class="modal-footer">
 <!--                                    <button type="button" class="btn btn-primary">Создать дубликат</button>-->
-                                <button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
+                                <button type="button" class="btn btn-default" data-dismiss="modal">{{__('Close')}}</button>
                             </div>
                         </div>
                     </div>
                 </div>
                 <a class="btn btn-sm btn-default float-right disabled" data-filter=""  data-attr="{{$attr->name}}" data-toggle="modal" data-target="#modal-{{$attr->meta}}" id="similar-{{$attr->meta}}" href="#" style="margin-top: 10px;">
-                    Поиск по выбранному значению
+                    {{__('Search records')}}
                 </a>
             @endif
         @endif

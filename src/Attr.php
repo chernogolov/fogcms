@@ -85,6 +85,8 @@ class Attr extends Model
             ->get();
 
         $data = array();
+
+
         foreach($attrs as $k => $v)
         {
             $function_name = 'get'.ucfirst($v->type).'Data';

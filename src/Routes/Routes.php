@@ -42,6 +42,7 @@ Route::match(['get', 'post'], '/tickets/new', 'Chernogolov\Fogcms\Controllers\Lk
 Route::match(['get', 'post'], '/tickets/view/{id}', 'Chernogolov\Fogcms\Controllers\Lk\SupportController@viewTicket')->name('view-ticket')->where('id', '[0-9]+')->middleware('web');
 Route::match(['get', 'post'], '/tickets/close/{id}', 'Chernogolov\Fogcms\Controllers\Lk\SupportController@closeTicket')->name('close-ticket')->where('id', '[0-9]+')->middleware('web');
 Route::match(['get', 'post'], '/feedback/add/{id}', 'Chernogolov\Fogcms\Controllers\Lk\SupportController@addFeedback')->name('add-feedback')->where('id', '[0-9]+')->middleware('web');
+//Route::match(['get', 'post'], '/housetickets', 'Chernogolov\Fogcms\Controllers\Lk\SupportController@getHouseTicket')->name('housetickets')->middleware('web');
 
 Route::match(['get', 'post'], '/finance', 'Chernogolov\Fogcms\Controllers\Lk\FinanceController@financeCenter')->name('finance')->middleware('web');
 Route::match(['get', 'post'], '/charges', 'Chernogolov\Fogcms\Controllers\Lk\FinanceController@getCharges')->name('charges')->middleware('web');

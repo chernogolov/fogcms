@@ -70,9 +70,7 @@
                                     @case('date')
                                         {{ date('Y-m-d H:i', $record->$key) }}
                                     @break
-                                    @case('digit')
-                                        {{ $record->$key / 100 }}
-                                    @break
+
                                     @case('image')
                                         @if(!empty($record->$key))
                                             <img src="/imagecache/small/{{ $record->$key }}" class="img-responsive">

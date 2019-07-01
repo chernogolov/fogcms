@@ -174,6 +174,46 @@ class SupportController extends LkController
         }
     }
 
+    public function getHouseTicket(Request $request, $view = false)
+    {
+        $this->getAccounts();
+        $this->title = __('Tickets your home');
+
+        $node = Reg::where('id', '=', Config::get('fogcms.tickets_reg_id'))->first();
+
+        $params = ['limit' => 1000];
+        if(!empty($this->current_account)) {
+            $params['filters'] =
+                [
+                    'address' => [['address', '=', $this->current_account['address.id']]],
+                ];
+            $accounts = Records::getRecords(Config::get('fogcms.accounts_reg_id'), $params)->keyBy('id');
+        }
+
+        $params['filters']['account_number']['whereIn'][] = null;
+        if(!empty($this->current_account)) {
+            foreach($this->accounts as $acc)
+            {
+                $params['filters']['multiaddress']['whereIn'][] = $acc->address_rid;
+            }
+        }
+
+        $params['orderBy'] = ['field' => 'created_at', 'type' => 'ASC'];
+        $params['type'] = 'tickets';
+        $attrs = Attr::getFields($node, ['entry']);
+        $params['fields'] = $attrs['fields'];
+        $records = Records::getRecords(Config::get('fogcms.tickets_reg_id'), $params)->all();
+        $this->data['title'] = $this->title;
+
+        if($request->ajax() || $view)
+            return view('fogcms::lk/pages/housetickets', ['records' => $records, 'node' => $node]);
+        else
+        {
+            $this->data['views'][] = view('fogcms::lk/pages/housetickets', ['records' => $records, 'node' => $node]);
+            return $this->index();
+        }
+    }
+
     public function closeTicket($id)
     {
         $record = Records::where('id', '=', $id)->first();

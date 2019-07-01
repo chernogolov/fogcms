@@ -50,6 +50,7 @@ class Records extends Model
             foreach($attrs as $name => $attr)
                 $data = array_merge($data, Self::flatAttr($name, $attr));
         }
+
         return $data;
     }
 
@@ -76,6 +77,7 @@ class Records extends Model
             foreach($attr->values as $val)
             {
                 $inattrs = Attr::getRecordAttrs($val->value, 'name');
+                $data[$name . '.id'] = $val->value;
                 foreach($inattrs as $inname => $inattr)
                     $data = array_merge($data, Self::flatAttr($name . '.' . $inname, $inattr));
             }
@@ -96,6 +98,7 @@ class Records extends Model
 
     public static function getRecords($id, $params = array(), $attrs = array())
     {
+
         $where = [];
         $whereIn = [];
         $select[] = 'records.*';
@@ -179,6 +182,17 @@ class Records extends Model
                             }
                         }
                     }
+                    elseif($fdata->type == 'digit' && $fdata->modificator == 'destination')
+                    {
+                        $table = Attr::getAttrTable($field, $fdata) . ' as ' . $alpha[$i];
+                        $tickets->leftJoin($table, function ($join) use($alpha, $fdata, $field, $i) {
+                            $join->on($alpha[$i].'.record_id', '=', 'records.id')
+                                ->where($alpha[$i].'.attr_id', '=', $fdata->attr_id);
+                        });
+                        $table_aliases[$field] = $alpha[$i];
+                        $select[] = DB::raw('GROUP_CONCAT(ROUND(' . $alpha[$i] . '.value/100) SEPARATOR \';\') as ' . $field);
+                        $i++;
+                    }
                     else
                     {
                         $table = Attr::getAttrTable($field, $fdata) . ' as ' . $alpha[$i];
@@ -214,6 +228,7 @@ class Records extends Model
                 $attr_data = Attr::getAttrByName($key);
                 if($attr_data && isset($table_aliases[$key]))
                 {
+
                     if($attr_data->type == 'date')
                     {
                         $item[0] = $table_aliases[$key] . '.value';
@@ -231,6 +246,7 @@ class Records extends Model
                             if($k === 'whereIn')
                             {
                                 $whereIn[$table_aliases[$key] . '.value'] = $item;
+
                             }
                             else
                             {
@@ -316,7 +332,7 @@ class Records extends Model
 
 //        if(config('app.debug'))
 //        {
-//            var_dump($tickets->toSql());
+//            dd($tickets->toSql());
 //        }
 
 
@@ -398,20 +414,20 @@ class Records extends Model
 
         //save record regs ----------------------
         //get all regs
-//        $rs = DB::table('records_regs')->where([['records_id', '=', $record_id]])->select('records_regs.regs_id')->get();
-//        $new_rs = array();
-//        foreach($rs as $r)
-//        {
-//            $new_rs[] = $r->regs_id;
-        //ig regs_id not in regs
-//            if(!in_array($r->regs_id, $regs))
-//                DB::table('records_regs')->where([['records_id', '=', $record_id],['regs_id', '=', $r->regs_id]])->delete();
-//        }
-//        foreach($regs as $reg)
-//        {
-//            if(!in_array($reg, $new_rs))
-//                $id = DB::table('records_regs')->insertGetId(array('records_id' => $record_id, 'regs_id' => $reg));
-//        }
+        $rs = DB::table('records_regs')->where([['records_id', '=', $record_id]])->select('records_regs.regs_id')->get();
+        $new_rs = array();
+        foreach($rs as $r)
+        {
+            $new_rs[] = $r->regs_id;
+//        ig regs_id not in regs
+            if(!in_array($r->regs_id, $regs))
+                DB::table('records_regs')->where([['records_id', '=', $record_id],['regs_id', '=', $r->regs_id]])->delete();
+        }
+        foreach($regs as $reg)
+        {
+            if(!in_array($reg, $new_rs))
+                $id = DB::table('records_regs')->insertGetId(array('records_id' => $record_id, 'regs_id' => $reg));
+        }
 
         if(!empty($regs))
         {
