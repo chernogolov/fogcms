@@ -42,7 +42,7 @@
                       </thead>
                       <tbody>
                           @for($i = 1;$i<=12;++$i)
-                              @if(Storage::exists('/public/invoice/' . $i . '/' . $account['account_number'] . '.pdf') || in_array($i, $tmp_kvit))
+                              @if(Storage::exists('/public/invoice/' . $i . '/' . $account['account_number'] . '.pdf') || (is_array($tmp_kvit) && in_array($i, $tmp_kvit)))
                                   <tr>
                                     <td>{{$monts[$i]}}</td>
                                     <td>{{$account['account_number']}}</td>
