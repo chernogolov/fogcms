@@ -8,10 +8,6 @@
                     <form method="post" class="form-horizontal" id="invoiceForm" xmlns="http://www.w3.org/1999/html">
                         {{ csrf_field() }}
                         <div class="form-row">
-                            <div class="col-12">
-                            <small class="text-muted">Квитанция может формироваться в течение 1-2 минут.<br>Обновите страницу чтобы скачать сформированную квитанцию</small>
-                            <hr>
-                            </div>
                             <div class="col">
                               <select class="form-control" form="invoiceForm" name="month">
                                 <option value="1" @if(date('m')-1==1) selected @endif>Январь</option>
@@ -45,18 +41,28 @@
                         </tr>
                       </thead>
                       <tbody>
-                      @for($i = 1;$i<=12;++$i)
-                          @if(Storage::exists('/public/invoice/' . $i . '/' . $account_number . '.pdf'))
-                          <tr>
-                            <td>{{$monts[$i]}}</td>
-                            <td>{{$account_number}}</td>
-                            <td>{{date('Y-m-d', Storage::lastModified('/public/invoice/' . $i . '/' . $account_number . '.pdf'))}}</td>
-                            <td class="text-right"><a target="_blank" href="/storage/invoice/{{$i}}/{{$account_number}}.pdf">Скачать&nbsp;<span class="mdi mdi-download mdi-18px text-success "></span></a></td>
-                          </tr>
-                          @endif
-                      @endfor
+                          @for($i = 1;$i<=12;++$i)
+                              @if(Storage::exists('/public/invoice/' . $i . '/' . $account['account_number'] . '.pdf') || in_array($i, $tmp_kvit))
+                                  <tr>
+                                    <td>{{$monts[$i]}}</td>
+                                    <td>{{$account['account_number']}}</td>
+                                      @if(Storage::exists('/public/invoice/' . $i . '/' . $account['account_number'] . '.pdf'))
+                                          <td>{{date('Y-m-d', Storage::lastModified('/public/invoice/' . $i . '/' . $account['account_number'] . '.pdf'))}}</td>
+                                          <td class="text-right"><a target="_blank" href="/storage/invoice/{{$i}}/{{$account['account_number']}}.pdf">Скачать&nbsp;<span class="mdi mdi-download mdi-18px text-success "></span></a></td>
+                                      @else
+                                          <td>формирование...</td>
+                                          <td class="text-right"><a href="/finance">Обновить&nbsp;<span class="mdi mdi-refresh mdi-18px text-success "></span></a></td>
+                                      @endif
+                                  </tr>
+                              @endif
+                          @endfor
                       </tbody>
                     </table>
+                </div>
+                <div class="col-12">
+                    <hr>
+
+                    <small class="text-muted">Квитанция может формироваться в течение 1-2 минут.<br>Обновите страницу чтобы скачать сформированную квитанцию</small>
                 </div>
             </div>
     </div>

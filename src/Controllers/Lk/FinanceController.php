@@ -48,6 +48,7 @@ class FinanceController extends LkController
             if (isset($post_data['generate-invoice'])) {
                 $job = (new GenerateInvoice((object)$this->current_account, (int)$post_data['month']));
                 dispatch($job);
+                $request->session()->push('tmp_kvit', (int)$post_data['month']);
                 return true;
             }
         }
@@ -59,15 +60,15 @@ class FinanceController extends LkController
         $this->getAccounts();
 
         $this->title = __('Utilites');
-
+        $tmp_kvit = session('tmp_kvit');
         if($request->ajax() || $view)
-            return view('fogcms::lk/pages/charges', $this->current_account);
+            return view('fogcms::lk/pages/charges', ['account' => $this->current_account, 'tmp_kvit' => $tmp_kvit]);
         else
         {
             if($this->Charges($request))
                 return redirect('charges');
 
-            $this->data['views'][] = view('fogcms::lk/pages/charges', $this->current_account);
+            $this->data['views'][] = view('fogcms::lk/pages/charges', ['account' => $this->current_account, 'tmp_kvit' => $tmp_kvit]);
             return $this->index();
         }
     }
