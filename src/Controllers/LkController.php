@@ -60,8 +60,7 @@ class LkController extends PanelController
             }
             else
             {
-                $this->messages[] =  __("Add your account") . "<a href=\"". route('lk-accounts') . "\"><strong>" . __('here') . "</strong></a>" . __('for start');
-                $this->data['views'][] = view('fogcms::lk/pages/message', ['messages' => $this->messages]);
+                $this->data['views'][] = view('fogcms::lk/pages/welcome', ['messages' => $this->messages]);
             }
         }
     }
@@ -91,7 +90,7 @@ class LkController extends PanelController
         if(empty($this->accounts))
             return Redirect::route('lk-accounts');
 
-        $this->data['views'][] = "<div class='col-12'><div class='mb-4'><h1>".__('Welcome!')."</h1></div></div>";
+//        $this->data['views'][] = "<div class='col-12'><div class='mb-4'><h1>".__('Welcome!')."</h1></div></div>";
         $this->news_list_tpl = 'fogcms::lk/home/news_list';
         $this->params['limit'] = 2;
         $this->params['orderBy'] = ['field' => 'rating', 'type' => 'DESC'];

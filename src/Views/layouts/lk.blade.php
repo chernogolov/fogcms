@@ -153,7 +153,7 @@
 			<div class="container">
 				<div class="row justify-content-between align-items-center">
                     <div class="col-12 col-md-7 col-lg-7 pr-0 d-block d-md-flex text-md-left text-center"><img class="my-auto" src="{{env('APP_FOOTER_LOGO', '')}}" alt="logo">
-                        <p class="m-auto">© <?=date('Y')?>&nbsp;{{__('All rights reserved')}}</p><p class="m-auto">{{__('Version')}}&nbsp;:&nbsp;{{env('APP_VERSION', '')}}</p></div>
+                        <p class="m-auto">© <?=date('Y')?>&nbsp;{{__('All rights reserved')}}</p><p class="m-auto">{{__('Version')}}&nbsp;:&nbsp;1.2.5 Beta</p></div>
                     <div class="col-12 col-md-5 col-lg-3 text-md-right text-center"><a href="/privacy_policy" >{{__('Privacy policy')}}</a></div>
 				</div>
 			</div>
