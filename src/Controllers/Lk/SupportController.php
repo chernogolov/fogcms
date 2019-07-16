@@ -34,14 +34,15 @@ class SupportController extends LkController
     {
         $this->getAccounts();
 
-        $this->data['views'][] = $this->getTickets($request, true);
-        $this->data['views'][] = $this->documentsList($request, Config::get('fogcms.documents_reg_id'), true);
-        $this->data['views'][] = $this->documentsList($request, Config::get('fogcms.prot_oss'), true);
-        $this->data['views'][] = $this->documentsList($request, Config::get('fogcms.prot_sov'), true);
-        $this->data['views'][] = $this->documentsList($request, Config::get('fogcms.fin_otch'), true);
+        if(!empty($this->current_account)) {
+            $this->data['views'][] = $this->getTickets($request, true);
+            $this->data['views'][] = $this->documentsList($request, Config::get('fogcms.documents_reg_id'), true);
+            $this->data['views'][] = $this->documentsList($request, Config::get('fogcms.prot_oss'), true);
+            $this->data['views'][] = $this->documentsList($request, Config::get('fogcms.prot_sov'), true);
+            $this->data['views'][] = $this->documentsList($request, Config::get('fogcms.fin_otch'), true);
 
-        $this->data['views'][] = $this->qA($request, true);
-
+            $this->data['views'][] = $this->qA($request, true);
+        }
         $this->title = __('Support center');
 
         return $this->index();

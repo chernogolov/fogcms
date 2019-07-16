@@ -28,16 +28,18 @@ class FinanceController extends LkController
     {
         $this->getAccounts();
 
-        if($this->Charges($request))
-        {
-            sleep(3);
-            return redirect('finance');
+        if(!empty($this->current_account)) {
+
+            if ($this->Charges($request)) {
+                sleep(3);
+                return redirect('finance');
+            }
+            $this->data['views'][] = $this->getCharges($request, true);
+            $this->data['views'][] = $this->getPayments($request, true);
+
         }
-        $this->data['views'][] = $this->getCharges($request, true);
-        $this->data['views'][] = $this->getPayments($request, true);
 
         $this->title = __('Finance');
-
         return $this->index();
     }
 
@@ -61,16 +63,20 @@ class FinanceController extends LkController
 
         $this->title = __('Utilites');
         $tmp_kvit = session('tmp_kvit');
-        if($request->ajax() || $view)
-            return view('fogcms::lk/pages/charges', ['account' => $this->current_account, 'tmp_kvit' => $tmp_kvit]);
-        else
-        {
-            if($this->Charges($request))
-                return redirect('charges');
 
-            $this->data['views'][] = view('fogcms::lk/pages/charges', ['account' => $this->current_account, 'tmp_kvit' => $tmp_kvit]);
-            return $this->index();
+        if(!empty($this->current_account)) {
+            if ($request->ajax() || $view)
+                return view('fogcms::lk/pages/charges', ['account' => $this->current_account, 'tmp_kvit' => $tmp_kvit]);
+            else {
+                if ($this->Charges($request))
+                    return redirect('charges');
+
+                $this->data['views'][] = view('fogcms::lk/pages/charges', ['account' => $this->current_account, 'tmp_kvit' => $tmp_kvit]);
+                return $this->index();
+            }
         }
+        else
+            return $this->index();
     }
 
     public function getPayments(Request $request, $view = false)
@@ -78,12 +84,16 @@ class FinanceController extends LkController
         $this->getAccounts();
 
         $this->title = __('Payments');
-        if($request->ajax() || $view)
-            return view('fogcms::lk/pages/payments', $this->current_account);
-        else
-        {
-            $this->data['views'][] = view('fogcms::lk/pages/payments', $this->current_account);
-            return $this->index();
+
+        if(!empty($this->current_account)) {
+            if ($request->ajax() || $view)
+                return view('fogcms::lk/pages/payments', $this->current_account);
+            else {
+                $this->data['views'][] = view('fogcms::lk/pages/payments', $this->current_account);
+                return $this->index();
+            }
         }
+        else
+            return $this->index();
     }
 }
