@@ -9,7 +9,7 @@
     @endisset
 </div>
 <div class="card-body">
-<form method="post" class="form-horizontal" id="editForm" enctype="multipart/form-data"
+<form method="post" class="form-horizontal ajax-form" id="editForm" enctype="multipart/form-data" data-destination="records"
     @if(isset($data->id))
         action="{{ route('regs') . '/edit/' .  $node->id . '/' . $data->id}}"
     @else

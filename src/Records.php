@@ -228,25 +228,26 @@ class Records extends Model
                 $attr_data = Attr::getAttrByName($key);
                 if($attr_data && isset($table_aliases[$key]))
                 {
-
                     if($attr_data->type == 'date')
                     {
-                        $item[0] = $table_aliases[$key] . '.value';
-                        if($item[1] == '=')
-                        {
-                            $where[] = [$item[0], '>', strtotime($item[2])];
-                            $where[] = [$item[0], '<', strtotime($item[2])+86400];
+                        foreach($filter as $k => $item) {
+                            $item[0] = $table_aliases[$key] . '.value';
+                            if ($item[1] == '=') {
+                                $where[] = [$item[0], '>', strtotime($item[2])];
+                                $where[] = [$item[0], '<', strtotime($item[2]) + 86400];
+                            } else
+                                $where[] = [$item[0], $item[1], strtotime($item[2])];
                         }
-                        else
-                            $where[] = [$item[0], $item[1], strtotime($item[2])];
                     }
                     else
                         foreach($filter as $k => $item)
                         {
+                            if($attr_data->type == 'digit')
+                                $item[2] = $item[2] * 100;
+
                             if($k === 'whereIn')
                             {
                                 $whereIn[$table_aliases[$key] . '.value'] = $item;
-
                             }
                             else
                             {

@@ -158,7 +158,7 @@ class RecordsController extends PanelController
             if(isset($post_data['template']))
                 $template = $post_data['template'];
 
-            if(isset($post_data['delete']) && $this->can('delete'))
+            if(isset($post_data['delete']) && $this->can('delete') && isset($post_data['check']))
                 foreach($post_data['check'] as $rid => $v)
                     Records::deleteRecord($rid);
 
@@ -183,11 +183,13 @@ class RecordsController extends PanelController
                     }
                 }
 
+
             if(isset($post_data['filters']))
             {
                 $params['filters'] = Filters::validateFilters($post_data['filters']);
                 if(!isset($post_data['nosavefilters']))
                     !empty($params['filters']) ? $request->session()->put('f'.$id, $params['filters']) :  $request->session()->forget('f'.$id);
+
             }
 
             if(isset($post_data['fields']))
@@ -229,7 +231,9 @@ class RecordsController extends PanelController
         if(isset($post_data['clear']))
             $data['records'] = Records::clearReg($post_data['clear']);
 
+
         $data['records'] = Records::getRecords($id, $params);
+
 
         $this->title .= $this->node['name'];
         $data['reg_id'] = $id;

@@ -1,4 +1,4 @@
-<form method="post" class="form-horizontal" id="editForm" enctype="multipart/form-data" action="{{ route('reg_records', ['id' => $node->id]) }}">
+<form method="post" class="form-horizontal ajax-form" id="editForm" enctype="multipart/form-data" action="{{ route('reg_records', ['id' => $node->id]) }}"  data-destination="records">
     {{ csrf_field() }}
     <div class="table-container">
         <table class="table table-responsive items-table">

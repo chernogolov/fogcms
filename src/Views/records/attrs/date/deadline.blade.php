@@ -1,30 +1,28 @@
 @if (Gate::allows('view-regs'))
 <div class="row">
-    <div class="col-sm-4">
+    <div class="col-sm-3">
         <label class="control-label">
             {{ $attr->title }}
             @if($attr->is_required == 1)
-            <strong class="text-danger" style="font-size: 24px;">*</strong>
+                <strong class="text-danger" style="font-size: 24px;">*</strong>
             @endif
         </label>
     </div>
-    <div class="col-sm-8">
+    <div class="col-sm-9 pt-3">
         @if(isset($attr->values->value) && !isset($attr->mode))
             <input type="hidden" name="attr[{{ $attr->name }}][attr_id]" value="{{ $attr->attr_id }}">
             @if(isset($attr->values->id))
                 <input type="hidden" name="attr[{{ $attr->name }}][id]" value="{{ $attr->values->id }}">
             @endif
             <div class="row">
-                <div class="col-sm-12">
+                <div class="col-sm-4">
                     {{ date('Y-m-d H:i', $attr->values->value) }}
                 </div>
-                <div class="clearfix"></div>
-                <br>
-                <div class="col-sm-2">
-                    Добавить:
+                <div class="col-sm-4 text-right">
+                    {{__('Add')}}
                 </div>
-                <div class="col-sm-5">
-                    <select class="form-control" name="attr[{{ $attr->name }}][value]" @if($attr->is_required == 1) required="required" @endif>
+                <div class="col-sm-4">
+                    <select class="form-control form-control-sm" name="attr[{{ $attr->name }}][value]" @if($attr->is_required == 1) required="required" @endif>
                     <option value="{{ $attr->values->value }}" selected>0 ч.</option>
                     <option value="{{ 43200 + $attr->values->value }}">12 ч.</option>
                     <option value="{{ 86400 + $attr->values->value }} ">24 ч.</option>

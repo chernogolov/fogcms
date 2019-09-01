@@ -1,4 +1,4 @@
-<form method="post" class="form-horizontal" id="editForm">
+<form method="post" class="form-horizontal ajax-form" id="editForm" data-destination="records">
     {{ csrf_field() }}
 
     <div class="form-group row">

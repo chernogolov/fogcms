@@ -1,12 +1,12 @@
 <div class="row">
-    <div class="col-sm-4">
+    <div class="col-sm-3">
         <label class="control-label">{{ $attr->title }}
             @if($attr->is_required == 1)
                 <strong class="text-danger">*</strong>
             @endif
         </label>
     </div>
-    <div class="col-sm-8">
+    <div class="col-sm-9">
             <div class="row">
                 @if(isset($attr->values))
                     @foreach($attr->values as $v)

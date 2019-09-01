@@ -13,7 +13,7 @@
 </div>
 <div class="card-body">
     @include('fogcms::records.filters')
-    <form method="post" class="form-horizontal" id="editForm" enctype="multipart/form-data" action="{{ route('reg_records', ['id' => $node->id]) }}">
+    <form method="post" class="form-horizontal ajax-form" id="editForm" enctype="multipart/form-data" action="{{ route('reg_records', ['id' => $node->id]) }}" data-destination="records" >
         {{ csrf_field() }}
         <div class="table-container table-responsive">
             <table class="table items-table">
@@ -44,19 +44,19 @@
                                     <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                         <span class="mdi mdi-settings">&nbsp;</span><span class="caret"></span>
                                     </button>
-                                      <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                    <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                        @isset($edit)
+                                          <a class="dropdown-item ajax" href="{{ route('edit_record', ['id' => $reg_id, 'rid' => $record->id]  )}}">{{__('Edit')}}</a>
+                                          <div class="dropdown-divider"></div>
+                                        @endisset
+                                        @if(isset($node->print_template) && $node->print_template!='')
+                                          <div class="dropdown-divider"></div>
+                                          <a class="dropdown-item" target="_blank" href="{{ route('document',  ['id' => $reg_id, 'rid' => $record->id]) }}" title=""><span class="mdi mdi-file"></span>&nbsp;{{__('Download ')}}</a>
+                                        @endisset
                                         <a data-sid="1" data-id="{{$record->id}}" class="dropdown-item change_status" @if($record->status != 1) href="{{ route('change_status', ['rid' => $record->id]) }}" @endif>{{__('New')}}</a>
                                         <a data-sid="2" data-id="{{$record->id}}" class="dropdown-item change_status" @if($record->status != 2) href="{{ route('change_status', ['rid' => $record->id]) }}" @endif>{{__('In work')}}</a>
                                         <a data-sid="3" data-id="{{$record->id}}" class="dropdown-item change_status" @if($record->status != 3) href="{{ route('change_status', ['rid' => $record->id]) }}" @endif>{{__('Success')}}</a>
-                                        @isset($edit)
-                                            <div class="dropdown-divider"></div>
-                                            <a class="dropdown-item ajax" href="{{ route('edit_record', ['id' => $reg_id, 'rid' => $record->id]  )}}">{{__('Edit')}}</a>
-                                        @endisset
-                                        @if(isset($node->print_template) && $node->print_template!='')
-                                            <div class="dropdown-divider"></div>
-                                            <a class="dropdown-item" target="_blank" href="{{ route('document',  ['id' => $reg_id, 'rid' => $record->id]) }}" title=""><span class="mdi mdi-file"></span>&nbsp;{{__('Download ')}}</a>
-                                        @endisset
-                                      </div>
+                                    </div>
                                 </div>
                             </div>
                         </td>
@@ -73,6 +73,9 @@
                                             @break
                                             @case('digit')
                                                 {{ $record->$key / 100 }}
+                                            @break
+                                            @case('date')
+                                                {{ date('Y-m-d H:i', intval($record->$key)) }}
                                             @break
                                             @case('status')
                                             @if($record->$key == 1)

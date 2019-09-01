@@ -14,42 +14,42 @@
                     </div>
                 </div>
                 <div class="row">
-                    @php $i = 0 @endphp
-                    @if(isset($params['filters']['updated_at']))
-                    @foreach($params['filters']['updated_at'] as $filter)
-                    <div class="alert">
-                        <div class="col-sm-3">
-                            {{__('Updated at')}}
-                            <input type="hidden"  name="filters[updated_at][{{$i}}][]" value="records.updated_at" form="editForm">
-                        </div>
-                        <div class="col-sm-3 col-xs-4">
-                            <select name="filters[updated_at][{{$i}}][]" class="form-control" form="editForm">
-                                <option value="=" @if($filter[1] == '=') selected @endif>=</option>
-                                <option value=">" @if($filter[1] == '>') selected @endif>&gt;</option>
-                                <option value="<" @if($filter[1] == '<') selected @endif>&lt;</option>
-                            </select>
-                        </div>
-                        <div class="col-sm-5 col-xs-6">
-                            <input type="date" class="form-control" name="filters[updated_at][{{$i}}][]" value="{{ $filter[2] }}"  form="editForm">
-                        </div>
-                        <div class="col-sm-1 col-xs-2">
-                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true" title="{{__('Remove filter')}}">&times;</button>
-                        </div>
+                    <div class="col-12">
+                        @php $i = 0 @endphp
+                        @if(isset($params['filters']['updatet_at']))
+                            @foreach($params['filters']['updatet_at'] as $filter)
+                                <div class="alert row">
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <label class="input-group-text" for="inputGroupSelect01">{{__('Updated at')}}</label>
+                                        </div>
+                                        <input type="hidden"  name="filters[updatet_at][{{$i}}][]" value="records.updatet_at" form="modalForm">
+                                        <select name="filters[updatet_at][{{$i}}][]" class="form-control" form="modalForm">
+                                            <option value="=" @if($filter[1] == '=') selected @endif>=</option>
+                                            <option value=">" @if($filter[1] == '>') selected @endif>&gt;</option>
+                                            <option value="<" @if($filter[1] == '<') selected @endif>&lt;</option>
+                                        </select>
+                                        <input type="date" class="form-control" name="filters[updatet_at][{{$i}}][]" value="{{ $filter[2] }}"  form="modalForm">
+                                        <div class="input-group-append">
+                                            <button type="button" class="btn btn-outline-secondary" data-dismiss="alert" aria-hidden="true" title="{{__('Remove filter')}}">&times;</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                @php
+                                $i++;
+                                @endphp
+                            @endforeach
+                        @endif
                     </div>
-                    @php
-                    $i++;
-                    @endphp
-                    @endforeach
-                    @endif
                 </div>
                 <hr>
                 <div class="row">
                     <div class="col-sm-4">
                         {{__('Updated at')}}
-                        <input type="hidden"  name="filters[updated_at][{{$i}}][]" value="records.updated_at" form="editForm">
+                        <input type="hidden"  name="filters[updated_at][{{$i}}][]" value="records.updated_at" form="modalForm">
                     </div>
                     <div class="col-sm-3 col-xs-4">
-                        <select name="filters[updated_at][{{$i}}][]" class="form-control" form="editForm">
+                        <select name="filters[updated_at][{{$i}}][]" class="form-control" form="modalForm">
                             <option selected disabled></option>
                             <option value="=">=</option>
                             <option value=">">&gt;</option>
@@ -57,13 +57,13 @@
                         </select>
                     </div>
                     <div class="col-sm-5 col-xs-8">
-                        <input type="date" class="form-control" name="filters[updated_at][{{$i}}][]" form="editForm" value="{{ date('Y-m-d') }}">
+                        <input type="date" class="form-control" name="filters[updated_at][{{$i}}][]" form="modalForm" value="{{ date('Y-m-d') }}">
                     </div>
                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">{{__('Close')}}</button>
-                <button type="submit" data-destination="records" class="btn btn-primary submit" form="editForm">{{__('Filter')}}&nbsp;<span class="mdi mdi-filter"></span></button>
+                <button type="submit" data-destination="records" class="btn btn-primary submit" form="modalForm">{{__('Filter')}}&nbsp;<span class="mdi mdi-filter"></span></button>
             </div>
         </div>
     </div>

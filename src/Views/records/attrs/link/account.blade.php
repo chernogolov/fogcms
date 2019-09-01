@@ -13,17 +13,18 @@
     <div class="col-sm-9">
         <input type="hidden" name="attr[{{ $attr->name }}][attr_id]" value="{{ $attr->attr_id }}">
         <div class="input-group mb-3">
-          <div class="input-group-prepend w-50">
+          <div class="input-group-prepend">
             <input autocomplete="off"
                    type="text"
-                   class="search-link sl sl-l w-100"
+                   class="search-link form-control"
                    data-id="{{$attr->meta}}"
                    id='link-{{$attr->meta}}'
                    list="list-{{$attr->meta}}"
-                   placeholder="{{__('Search')}}: {{implode(', ',array_values($attr->data))}}" style="">
+                   title="{{__('Search by')}}: {{implode(', ',array_values($attr->data))}}"
+                   placeholder="{{__('Search')}}: {{implode(', ',array_values($attr->data))}}" style="border-top-right-radius: 0;border-bottom-right-radius: 0;">
           </div>
           @if(isset($attr->values) && count($attr->values)>0)
-              <select class="sl sl-r" data-id="{{$attr->meta}}" name="attr[{{ $attr->name }}][value]" id="list-{{$attr->meta}}"
+              <select class="form-control" data-id="{{$attr->meta}}" name="attr[{{ $attr->name }}][value]" id="list-{{$attr->meta}}"
               @if($attr->is_required == 1) required="required" @endif
               >
                   @foreach($attr->values as $v)
@@ -35,10 +36,13 @@
                   @endforeach
               </select>
           @else
-              <select class="sl sl-r clear" data-id="{{$attr->meta}}" name="attr[{{ $attr->name }}][value]" id="list-{{$attr->meta}}"
+              <select class="form-control" data-id="{{$attr->meta}}" name="attr[{{ $attr->name }}][value]" id="list-{{$attr->meta}}"
               @if($attr->is_required == 1) required="required" @endif
               ></select>
           @endif
+            <div class="input-group-append">
+                <button type="button" class="btn btn-outline-secondary clear-search-{{$attr->meta}}" data-target="link-{{$attr->meta}}" title="{{__('Clear')}}">&times;</button>
+            </div>
         </div>
         <label id="attr_{{$attr->name}}_value" class="hidden text-danger"></label>
         @if ($errors->has('attr.'.$attr->name.'.value'))
@@ -133,6 +137,31 @@
                     },
                     success: function (data) {
                         $('#'+destination).html(data);
+                    },
+                    error: function (msg) {
+                        $('#'+destination).html(msg);
+                    }
+                });
+            })
+            .on("click", '.clear-search-{{$attr->meta}}', function(e){3
+
+                var searchInput = $(this).data('target');
+                $('#'+searchInput).val('');
+                var id = $('#list-{{$attr->meta}}').data('id');
+                var destination = 'list-'+id;
+                $.ajax({
+                    url: "/search/"+id,
+                    type: "POST",
+                    data: {},
+                    headers: {
+                        'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    beforeSend: function() {
+                        $('#'+destination).html('<option value="" selected disabled hidden>&nbsp;&nbsp;Загрузка...</option>');
+                    },
+                    success: function (data) {
+                        $('#'+destination).html('<option value="" selected disabled hidden></option>');
+                        $('#'+destination).append(data);
                     },
                     error: function (msg) {
                         $('#'+destination).html(msg);

@@ -1,4 +1,4 @@
-<form method="post" class="form-horizontal" id="modalForm" action="{{ route('reg_records', ['id' => $node->id]) }}">
+<form method="post" class="form-horizontal ajax-form" id="modalForm" action="{{ route('reg_records', ['id' => $node->id]) }}"  data-destination="records">
     {{ csrf_field() }}
     <div class="row">
         <div class="col-sm-6 col-xs-4">
@@ -31,10 +31,10 @@
         </div>
         <div class="col-sm-6 col-xs-8 float-right text-right">
             <div class="btn-group clear">
-                <button class="btn btn-light btn-sm clear_filters submit mdi mdi-close" title="{{__('Clear all')}}" data-destination="records" name="clear_all" form="editForm" value="true"></button>
-                <button class="btn btn-light btn-sm clear_filters submit mdi mdi-filter-remove" title="{{__('Clear filters')}}" data-destination="records" name="clear_filters" form="editForm" value="true"></button>
-                <button class="btn btn-light btn-sm clear_filters submit mdi mdi-table-row-remove" title="{{__('Clear table row view')}}" data-destination="records" name="clear_fields" form="editForm" value="true"></button>
-                <button class="btn btn-light btn-sm clear_filters submit mdi mdi-playlist-remove" title="{{__('Clear order')}}" data-destination="records" name="clear_order" form="editForm" value="true"></button>
+                <button type="submit" class="btn btn-light btn-sm clear_filters submit mdi mdi-close" title="{{__('Clear all')}}" data-destination="records" name="clear_all" form="modalForm" value="true"></button>
+                <button type="submit" class="btn btn-light btn-sm clear_filters submit mdi mdi-filter-remove" title="{{__('Clear filters')}}" data-destination="records" name="clear_filters" form="modalForm" value="true"></button>
+                <button type="submit" class="btn btn-light btn-sm clear_filters submit mdi mdi-table-row-remove" title="{{__('Clear table row view')}}" data-destination="records" name="clear_fields" form="modalForm" value="true"></button>
+                <button type="submit" class="btn btn-light btn-sm clear_filters submit mdi mdi-playlist-remove" title="{{__('Clear order')}}" data-destination="records" name="clear_order" form="modalForm" value="true"></button>
             </div>
         </div>
     </div>

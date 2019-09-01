@@ -24,6 +24,6 @@ class RecordsImport implements ToCollection, WithHeadingRow, WithChunkReading
 
     public function chunkSize(): int
     {
-        return 100;
+        return 1000;
     }
 }
