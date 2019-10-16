@@ -24,7 +24,7 @@
     <div class="form-group row">
         <label for="inputPhone" class="col-sm-4 col-form-label">{{__('Phone') . ' (' . __('Only digit') . ')'}}</label>
         <div class="col-sm-8">
-            <input type="text" id="inputPhone" name="user[phone]" @if(isset($user->phone)) value="{{ $user->phone }}" @endif class="form-control" form="editForm">
+            <input style="background: #fff" type="text" onfocus="this.removeAttribute('readonly');" readonly  autocomplete="off" id="inputPhone" name="user[phone]" @if(isset($user->phone)) value="{{ $user->phone }}" @endif class="form-control" form="editForm">
             @if ($errors->has('user.phone'))
                 <span class="help-block">
                     <strong>{{ $errors->first('user.phone') }}</strong>
@@ -35,7 +35,7 @@
     <div class="form-group row">
         <label for="inputName" class="col-sm-4 col-form-label">{{__('Description')}}</label>
         <div class="col-sm-8">
-            <textarea name="user[description]"  class="form-control" form="editForm">@if(isset($user->description)){{ $user->description }}@endif</textarea>
+            <textarea name="user[description]"  autocomplete="off"   class="form-control" form="editForm">@if(isset($user->description)){{ $user->description }}@endif</textarea>
             @if ($errors->has('user.description'))
                 <span class="help-block">
                     <strong>{{ $errors->first('user.description') }}</strong>

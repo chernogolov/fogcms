@@ -50,8 +50,10 @@
         @endif
            <hr>
            <div class="form-group row">
-               <div class="col-12">
-                   <small class="text-muted float-left fs-13 d-inline-block pt-2">Показания будут приняты к учету до конца текущего месяца</small>
+               <div class="col-8">
+                   <small class="text-muted float-left fs-13 d-inline-block pt-2">Показания принимаются до 24 числа текущего месяца включительно. С 25 показания будут приняты к учёту в следующем месяце.</small>
+               </div>
+               <div class="col-4">
                    <button type="submit" form="sendValuesForm" class="btn btn-green float-right" value="true" name="send-values">{{__('Send')}}</button>
                </div>
            </div>
