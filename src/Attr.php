@@ -672,16 +672,17 @@ class Attr extends Model
                 $data['value'] = intval(str_replace('::', '', $data['value']));
         }
 
-
-
         if(!is_array($data['value']))
             $data['value'] = [$data['value']];
 
-        foreach($data['value'] as $value)
-        {
+        foreach($data['value'] as $value) {
             $insert_data = $data;
             $insert_data['value'] = $value;
 
+            if (isset($insert_data['id']))
+            {
+                dd($insert_data);
+            }
             $ids[] = DB::table('attrs_digit')->updateOrInsert($insert_data, ['value' => $value]);
         }
 

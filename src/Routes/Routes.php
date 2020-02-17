@@ -9,7 +9,7 @@
 |
 */
 
-Route::get('/test', 'Chernogolov\Fogcms\Controllers\TestController@index')->name('test');
+Route::get('/test', 'Chernogolov\Fogcms\Controllers\TestController@index')->name('test')->middleware('web');
 
 Route::get('/home', function() {
     return redirect('/');

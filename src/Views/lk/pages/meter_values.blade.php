@@ -7,11 +7,11 @@
 @php $services = [] @endphp
 @php $monts = [] @endphp
 @php $firstdate = \Carbon\Carbon::now()->format('d m Y'); @endphp
-
+@php $values = $values->sortBy('SendDate') @endphp
 @php $vd = $values->groupBy('ValueDate'); @endphp
 
 @if(count($values)>0)
-    @php $firstdate = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', current($vd->keys()->all()))->format('d m Y'); @endphp
+    @php $firstdate = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $vd->keys()->first())->format('d m Y'); @endphp
 @endif
 
 @foreach($vd->keys()->all() as $mont)
@@ -100,7 +100,6 @@
         @endif
     </div>
 </div>
-
 
 @foreach($values as $vv)
     @if($vv->ServiceName == 'Электроэнергия')

@@ -39,9 +39,16 @@ class ExchangeErc extends Model
         if(Session::has('eAuthExpiresIn') && !$forceNewToken)
         {
             $eAuthExpiresIn = Session::get('eAuthExpiresIn');
+
             if($eAuthExpiresIn < Carbon::now())
             {
-                $result = $client->RefreshAuth(['refreshToken' => Session::get('eAuthRefreshToken')]);
+
+                try {
+                    $result = $client->RefreshAuth(['refreshToken' => Session::get('eAuthRefreshToken')]);
+                } catch (\Exception $e) {
+                    $result = $client->Auth(['email' => Config::get('fogcms.erc_email'), 'password' => Config::get('fogcms.erc_password')]);
+                }
+
                 if(isset($result->RefreshAuth->AccessToken))
                 {
                     Session::put('eAuthExpiresIn', $result->RefreshAuth->ExpiresIn);
@@ -168,7 +175,7 @@ class ExchangeErc extends Model
 
         $meteringDevicesValues = MeteringDevicesValues::where('account_number', $account->account_number)->first();
         if(!$meteringDevicesValues)
-            $period = Carbon::now()->startOfYear()->toIso8601String();
+            $period = Carbon::now()->subMonth(7)->toIso8601String();
         else
             $period = Carbon::now()->startOfMonth()->toIso8601String();
 
@@ -182,17 +189,13 @@ class ExchangeErc extends Model
 
         } catch (\Exception $e) {
 
-
-            file_get_contents('https://api.telegram.org/bot608599411:AAFPZIybZ-O9-t4y_rlRxmtQV4i-sV8aF6c/sendMessage?chat_id=293756888&text=gkh2 SOAP ERROR ' . $account->account_number);
-            $period = Carbon::now()->startOfMonth()->subMonth()->toIso8601String();
-
+            $token = Self::auth(true);
             $result = $client->GetMeteringDevicesValues([
                 'lsNumber' => $account->account_number,
                 'startDate' => $period,
                 'endDate' => Carbon::now()->toIso8601String(),
                 'accessToken' => $token
             ]);
-
         }
 
         if(isset($result->GetMeteringDevicesValuesResult->MeteringDeviceValue))
@@ -269,12 +272,24 @@ class ExchangeErc extends Model
             'compression' => true,
         ));
 
-        $result = $client->DownloadQuittance([
-            'lsNumber' => $account->account_number,
-            'beginDate' => $beginDate,
-            'accessToken' => $token
-        ]);
+        try {
+            $result = $client->DownloadQuittance([
+                'lsNumber' => $account->account_number,
+                'beginDate' => $beginDate,
+                'accessToken' => $token
+            ]);
 
+        } catch (\Exception $e) {
+
+            $token = Self::auth(true);
+            file_get_contents('https://api.telegram.org/bot608599411:AAFPZIybZ-O9-t4y_rlRxmtQV4i-sV8aF6c/sendMessage?chat_id=293756888&text=LK TOKEN REFRESH');
+
+            $result = $client->DownloadQuittance([
+                'lsNumber' => $account->account_number,
+                'beginDate' => $beginDate,
+                'accessToken' => $token
+            ]);
+        }
 
         if(isset($result->DownloadQuittanceResult->Content))
         {

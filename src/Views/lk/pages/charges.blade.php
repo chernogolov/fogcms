@@ -1,4 +1,4 @@
-@php $monts = ['','Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'] @endphp
+@php $months = [] @endphp
 
 <div class="col-12">
     <div class="container-input mb-4">
@@ -8,20 +8,13 @@
                     <form method="post" class="form-horizontal" id="invoiceForm" xmlns="http://www.w3.org/1999/html">
                         {{ csrf_field() }}
                         <div class="form-row">
+                            @php $date = \Carbon\Carbon::now(); @endphp
                             <div class="col">
                               <select class="form-control" form="invoiceForm" name="month">
-                                <option value="1" @if(date('m')-1==1) selected @endif>Январь</option>
-                                <option value="2" @if(date('m')-1==2) selected @endif>Февраль</option>
-                                <option value="3" @if(date('m')-1==3) selected @endif>Март</option>
-                                <option value="4" @if(date('m')-1==4) selected @endif>Апрель</option>
-                                <option value="5" @if(date('m')-1==5) selected @endif>Май</option>
-                                <option value="6" @if(date('m')-1==6) selected @endif>Июнь</option>
-                                <option value="7" @if(date('m')-1==7) selected @endif>Июль</option>
-                                <option value="8" @if(date('m')-1==8) selected @endif>Август</option>
-                                <option value="9" @if(date('m')-1==9) selected @endif>Сентябрь</option>
-                                <option value="10" @if(date('m')-1==10) selected @endif>Октябрь</option>
-                                <option value="11" @if(date('m')-1==11) selected @endif>Ноябрь</option>
-                                <option value="12" @if(date('m')-1==0) selected @endif>Декабрь</option>
+                              @for($m = 1;$m < 6;$m++)
+                                <option value="{{$date->subMonth(1)->format('n')}}"  @if(\Carbon\Carbon::now()->subMonth(1)->format('n') == $date->format('n')) selected @endif >{{$date->format('Y')}} {{__($date->format('F'))}}</option>
+                                @php $months[$date->format('n')] = $date->format('Y') . ' ' . __($date->format('F')) @endphp
+                              @endfor
                               </select>
                             </div>
                             <div class="col">
@@ -36,32 +29,28 @@
                         <tr>
                           <th scope="col">Месяц</th>
                           <th scope="col">ЛС</th>
-                          <th scope="col">Дата файла</th>
                           <th scope="col" class="text-right">Файл&nbsp;<span class="mdi mdi-file-pdf mdi-18px text-success"></span></th>
                         </tr>
                       </thead>
                       <tbody>
-                          @for($i = 1;$i<=12;++$i)
-                              @if(Storage::exists('/public/invoice/' . $i . '/' . $account['account_number'] . '.pdf') || (is_array($tmp_kvit) && in_array($i, $tmp_kvit)))
+                          @foreach($months as $key => $month)
+                              @if(Storage::exists('/public/invoice/' . $key . '/' . $account['account_number'] . '.pdf') || (is_array($tmp_kvit) && in_array($key, $tmp_kvit)))
                                   <tr>
-                                    <td>{{$monts[$i]}}</td>
+                                    <td>{{$month}}</td>
                                     <td>{{$account['account_number']}}</td>
-                                      @if(Storage::exists('/public/invoice/' . $i . '/' . $account['account_number'] . '.pdf'))
-                                          <td>{{date('Y-m-d', Storage::lastModified('/public/invoice/' . $i . '/' . $account['account_number'] . '.pdf'))}}</td>
-                                          <td class="text-right"><a target="_blank" href="/storage/invoice/{{$i}}/{{$account['account_number']}}.pdf">Скачать&nbsp;<span class="mdi mdi-download mdi-18px text-success "></span></a></td>
+                                      @if(Storage::exists('/public/invoice/' . $key . '/' . $account['account_number'] . '.pdf'))
+                                          <td class="text-right"><a target="_blank" href="/storage/invoice/{{$key}}/{{$account['account_number']}}.pdf">Скачать&nbsp;<span class="mdi mdi-download mdi-18px text-success "></span></a></td>
                                       @else
-                                          <td>формирование...</td>
                                           <td class="text-right"><a href="/finance">Обновить&nbsp;<span class="mdi mdi-refresh mdi-18px text-success "></span></a></td>
                                       @endif
                                   </tr>
                               @endif
-                          @endfor
+                          @endforeach
                       </tbody>
                     </table>
                 </div>
                 <div class="col-12">
                     <hr>
-
                     <small class="text-muted">Квитанция может формироваться в течение 1-2 минут.<br>Обновите страницу чтобы скачать сформированную квитанцию</small>
                 </div>
             </div>
