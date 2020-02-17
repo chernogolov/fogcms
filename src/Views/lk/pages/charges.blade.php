@@ -39,7 +39,7 @@
                                     <td>{{$month}}</td>
                                     <td>{{$account['account_number']}}</td>
                                       @if(Storage::exists('/public/invoice/' . $key . '/' . $account['account_number'] . '.pdf'))
-                                          <td class="text-right"><a target="_blank" href="/storage/invoice/{{$key}}/{{$account['account_number']}}.pdf">Скачать&nbsp;<span class="mdi mdi-download mdi-18px text-success "></span></a></td>
+                                          <td class="text-right"><a download href="/storage/invoice/{{$key}}/{{$account['account_number']}}.pdf">Скачать&nbsp;<span class="mdi mdi-download mdi-18px text-success"></span></a></td>
                                       @else
                                           <td class="text-right"><a href="/finance">Обновить&nbsp;<span class="mdi mdi-refresh mdi-18px text-success "></span></a></td>
                                       @endif
